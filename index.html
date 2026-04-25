@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1C1C1E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Monitoring Debit Bendung v8.0</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --ios-blue: #007AFF; 
+            --ios-green: #34C759; 
+            --ios-red: #FF3B30;
+            --ios-orange: #FF9500;
+            --ios-card: rgba(255, 255, 255, 0.9); 
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding-bottom: 40px; background-color: #F2F2F7; overflow-x: hidden; transition: background 0.5s ease; }
+
+        .hero-pro {
+            background: linear-gradient(180deg, #1C1C1E 0%, #2C2C2E 100%);
+            padding: 65px 24px 60px; border-bottom-left-radius: 45px; border-bottom-right-radius: 45px; 
+            color: white; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            transition: all 0.5s ease;
+        }
+        
+        /* Status Theme Modifiers */
+        body.theme-siaga { background-color: #FFF9F2; }
+        body.theme-bahaya { background-color: #FFF2F2; }
+        .hero-siaga { background: linear-gradient(180deg, var(--ios-orange) 0%, #E68600 100%) !important; }
+        .hero-bahaya { background: linear-gradient(180deg, var(--ios-red) 0%, #D73128 100%) !important; }
+
+        .badge-system {
+            background: rgba(255,255,255,0.15); color: white; padding: 4px 12px; border-radius: 20px;
+            font-size: 10px; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .instansi-title { font-size: 11px; font-weight: 700; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; }
+        .main-title { font-size: 26px; font-weight: 800; margin: 5px 0 20px; letter-spacing: -0.5px; color: #fff; }
+
+        .time-box-capsule {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .container { max-width: 480px; margin: auto; padding: 0 16px; }
+        .card { 
+            background: var(--ios-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); position: relative;
+        }
+        .card-label { font-size: 11px; font-weight: 800; color: var(--ios-blue); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+        input, select { 
+            width: 100%; height: 52px; border: 1.5px solid rgba(0,0,0,0.08); border-radius: 16px; 
+            background: rgba(255,255,255,1); padding: 0 16px; font-size: 14px; margin-bottom: 10px; font-family: inherit;
+        }
+        input:focus { border-color: var(--ios-blue); outline: none; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .grid-3 input { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+
+        .btn-send { 
+            background: var(--ios-green); color: white; border: none; height: 68px; 
+            border-radius: 25px; width: 100%; font-size: 17px; font-weight: 800; 
+            cursor: pointer; box-shadow: 0 12px 30px rgba(52, 199, 89, 0.35); display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin-bottom: 15px;
+        }
+        .btn-send:active { transform: scale(0.96); }
+
+        .pro-label { font-size: 9px; font-weight: 800; opacity: 0.5; display: block; margin-bottom: 6px; color: #333; }
+        .auto-calc { background: var(--ios-blue); color: white; padding: 2px 8px; border-radius: 6px; font-size: 10px; float: right; }
+
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121214; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s ease; }
+        #splash-screen.fade-out { opacity: 0; visibility: hidden; }
+
+        .camera-box {
+            border: 2px dashed rgba(0,0,0,0.1); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 15px;
+            color: var(--ios-blue); font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.3s;
+        }
+        .camera-box:active { background: rgba(0,122,255,0.05); }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <i class="fa-solid fa-droplet" style="font-size:55px; color:var(--ios-blue); filter: drop-shadow(0 0 15px rgba(0,122,255,0.5));"></i>
+    <h2 style="color:white; margin-top:20px; letter-spacing:4px; font-weight:800; font-size:16px; text-align:center;">MONITORING DEBIT<br>BENDUNG V8.0</h2>
+</div>
+
+<div class="container">
+    <div class="hero-pro" id="hero" style="margin-left:-16px; margin-right:-16px;">
+        <div class="badge-system">OFFICIAL ENTERPRISE</div>
+        <p class="instansi-title">UPT PSDA BONDOYUDO BARU</p>
+        <h1 class="main-title">Debit Monitoring</h1>
+        
+        <div class="time-box-capsule">
+            <div>
+                <span id="day-info" style="font-size:9px; font-weight:800; opacity:0.5; display:block; letter-spacing:1px; margin-bottom:4px; text-transform:uppercase;">...</span>
+                <div id="live-time" style="font-family:'JetBrains Mono'; font-size:22px; font-weight:700;">00:00:00</div>
+            </div>
+            <div id="w-icon" style="background:rgba(255,255,255,0.1); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <i class="fa-solid fa-sun" style="color:#FFD60A; font-size:24px;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. Administrasi -->
+    <div class="card" style="margin-top:-35px;">
+        <span class="card-label"><i class="fa-solid fa-user-check"></i> 1. Administrasi & Petugas</span>
+        <input type="text" id="petugas" placeholder="Nama Petugas Pelapor" style="font-weight:700;">
+        <div style="display:flex; gap:8px;">
+            <input type="date" id="tgl"><input type="time" id="jam">
+        </div>
+        <select id="sDI" onchange="hDI()"><option>DI BARU</option><option>DI POROLINGGO</option><option value="m">LAINNYA...</option></select>
+        <input type="text" id="mDI" style="display:none;" placeholder="Isi Nama DI">
+        
+        <select id="sB" onchange="hB()"><option>BENDUNG KARANGDORO</option><option>BENDUNG SUMBERMULYO</option><option value="m">LAINNYA...</option></select>
+        <input type="text" id="mB" style="display:none;" placeholder="Isi Nama Bendung">
+    </div>
+
+    <!-- 2. Data Teknis -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-gauge-high"></i> 2. Data Teknis Debit</span>
+        <span class="pro-label">TINGGI MUKA AIR (CM)</span>
+        <input type="text" id="tma" placeholder="TMA cm (Bangunan Utama)" inputmode="decimal" oninput="fR(this)">
+        
+        <div style="background:rgba(0,122,255,0.06); padding:15px; border-radius:20px; margin-bottom:15px; border:1px solid rgba(0,122,255,0.15);">
+            <span class="pro-label" style="color:var(--ios-blue)">MONITORING DEBIT (Cm³/dt)</span>
+            <input type="text" id="mon" placeholder="00.000" inputmode="decimal" oninput="fR(this)" style="margin-bottom:0; font-weight:800; color:var(--ios-blue); font-size: 18px;">
+        </div>
+
+        <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:20px;">
+            <span class="pro-label">INTAKE KIRI (Qact vs Qd)</span>
+            <div class="grid-3">
+                <input type="text" id="lk" placeholder="Luas" inputmode="decimal" oninput="fR(this)">
+                <input type="text" id="qk" placeholder="Qact" inputmode="decimal" oninput="fR(this); checkAlert('qk','dk')">
+                <input type="text" id="dk" placeholder="Qd" inputmode="decimal" oninput="fR(this); checkAlert('qk','dk')">
+            </div>
+        </div>
+        <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:20px; margin-top:12px;">
+            <span class="pro-label">INTAKE KANAN (Qact vs Qd)</span>
+            <div class="grid-3">
+                <input type="text" id="lr" placeholder="Luas" inputmode="decimal" oninput="fR(this)">
+                <input type="text" id="qr" placeholder="Qact" inputmode="decimal" oninput="fR(this); checkAlert('qr','dr')">
+                <input type="text" id="dr" placeholder="Qd" inputmode="decimal" oninput="fR(this); checkAlert('qr','dr')">
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Kondisi -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-mountain-sun"></i> 3. Kondisi & Realisasi</span>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <select id="cuaca" onchange="uW()"><option>Cerah</option><option>Mendung</option><option>Hujan</option></select>
+            <select id="status" onchange="uS()"><option value="Aman">Aman</option><option value="Siaga">Siaga</option><option value="Bahaya">Bahaya</option></select>
+        </div>
+        
+        <div style="background:rgba(0,0,0,0.02); padding:15px; border-radius:20px; margin-top:10px;">
+            <span class="pro-label">MASA TANAM & REALISASI <span id="persen-badge" class="auto-calc">0%</span></span>
+            <div style="display:grid; grid-template-columns:0.6fr 1fr 1fr; gap:8px;">
+                <select id="mt" style="margin:0;"><option value="1">MT 1</option><option value="2" selected>MT 2</option><option value="3">MT 3</option></select>
+                <input type="text" id="baku" placeholder="Baku" inputmode="decimal" oninput="fR(this); calcTanam()" style="margin:0;">
+                <input type="text" id="real" placeholder="Real" inputmode="decimal" oninput="fR(this); calcTanam()" style="margin:0;">
+            </div>
+        </div>
+
+        <label class="camera-box" for="cam-input">
+            <i class="fa-solid fa-camera" style="font-size:20px; margin-bottom:8px; display:block;"></i>
+            AMBIL FOTO PEILSCHALE TMA
+            <input type="file" id="cam-input" accept="image/*" capture="camera" style="display:none;">
+        </label>
+    </div>
+
+    <button class="btn-send" onclick="processReport()"><i class="fa-brands fa-whatsapp" style="font-size:22px;"></i> GENERATE & KIRIM DATA</button>
+    
+    <div id="sync-status" style="text-align:center; font-size:10px; font-weight:700; color:var(--ios-blue); opacity:0.8; display:none;">
+        <i class="fa-solid fa-circle-notch fa-spin"></i> MENYINKRONKAN KE DATABASE...
+    </div>
+
+    <div style="text-align:center; margin-top:40px; font-size:10px; opacity:0.3; font-weight:800; letter-spacing:2px;">OFFICIAL SYSTEM BY KORLAP BANYUWANGI</div>
+</div>
+
+<script>
+    // --- CONFIGURATION ---
+    const scriptURL = ""; // TEMPEL URL GOOGLE APPS SCRIPT ANDA DI SINI
+
+    function fR(input) {
+        let v = input.value.replace(/[^0-9]/g, '');
+        if (v) input.value = parseInt(v).toLocaleString('id-ID');
+    }
+
+    function hDI() { document.getElementById('mDI').style.display = document.getElementById('sDI').value==='m'?'block':'none'; }
+    function hB() { document.getElementById('mB').style.display = document.getElementById('sB').value==='m'?'block':'none'; }
+    
+    function uW() {
+        const c = document.getElementById('cuaca').value;
+        const i = document.getElementById('w-icon');
+        if(c==='Cerah') i.innerHTML = '<i class="fa-solid fa-sun" style="color:#FFD60A; font-size:24px;"></i>';
+        else if(c==='Mendung') i.innerHTML = '<i class="fa-solid fa-cloud" style="color:#AEAEB2; font-size:24px;"></i>';
+        else i.innerHTML = '<i class="fa-solid fa-cloud-showers-heavy" style="color:var(--ios-blue); font-size:24px;"></i>';
+    }
+
+    function uS() {
+        const s = document.getElementById('status').value;
+        const b = document.body;
+        const h = document.getElementById('hero');
+        b.className = ''; h.className = 'hero-pro';
+        if(s==='Siaga') { b.classList.add('theme-siaga'); h.classList.add('hero-siaga'); }
+        else if(s==='Bahaya') { b.classList.add('theme-bahaya'); h.classList.add('hero-bahaya'); }
+    }
+
+    function checkAlert(actId, qdId) {
+        const act = parseFloat(document.getElementById(actId).value.replace(/\./g, '')) || 0;
+        const qd = parseFloat(document.getElementById(qdId).value.replace(/\./g, '')) || 0;
+        document.getElementById(actId).style.color = (act > qd && qd > 0) ? 'var(--ios-red)' : 'inherit';
+    }
+
+    function calcTanam() {
+        const baku = parseFloat(document.getElementById('baku').value.replace(/\./g, '')) || 0;
+        const real = parseFloat(document.getElementById('real').value.replace(/\./g, '')) || 0;
+        const badge = document.getElementById('persen-badge');
+        if(baku > 0) {
+            const p = ((real/baku)*100).toFixed(0);
+            badge.innerText = p + '%';
+            badge.style.background = p > 100 ? 'var(--ios-red)' : 'var(--ios-blue)';
+        }
+    }
+
+    function clock() {
+        const n = new Date();
+        document.getElementById('live-time').innerText = n.toLocaleTimeString('id-ID').replace(/\./g, ':');
+        const hariArr = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+        const blnArr = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+        document.getElementById('day-info').innerText = `${hariArr[n.getDay()]}, ${n.getDate()} ${blnArr[n.getMonth()]}`;
+    }
+
+    window.onload = () => {
+        document.getElementById('tgl').value = new Date().toISOString().split('T')[0];
+        document.getElementById('jam').value = new Date().toTimeString().substring(0,5);
+        setInterval(clock, 1000);
+        setTimeout(() => document.getElementById('splash-screen').classList.add('fade-out'), 1600);
+    };
+
+    async function processReport() {
+        const p = document.getElementById('petugas').value;
+        if(!p) { alert("Harap isi Nama Petugas terlebih dahulu!"); return; }
+
+        const di = document.getElementById('sDI').value==='m'?document.getElementById('mDI').value:document.getElementById('sDI').value;
+        const b = document.getElementById('sB').value==='m'?document.getElementById('mB').value:document.getElementById('sB').value;
+        const bakuNum = parseFloat(document.getElementById('baku').value.replace(/\./g, '')) || 0;
+        const realNum = parseFloat(document.getElementById('real').value.replace(/\./g, '')) || 0;
+        const persen = bakuNum > 0 ? ((realNum / bakuNum) * 100).toFixed(0) : "0";
+
+        const dataObj = {
+            petugas: p,
+            tanggal: document.getElementById('tgl').value,
+            jam: document.getElementById('jam').value,
+            di: di.toUpperCase(),
+            bendung: b.toUpperCase(),
+            tma: document.getElementById('tma').value,
+            mon: document.getElementById('mon').value,
+            qk: document.getElementById('qk').value,
+            dk: document.getElementById('dk').value,
+            qr: document.getElementById('qr').value,
+            dr: document.getElementById('dr').value,
+            cuaca: document.getElementById('cuaca').value,
+            status: document.getElementById('status').value,
+            mt: document.getElementById('mt').value,
+            persen: persen
+        };
+
+        // 1. Kirim ke Database (Google Sheets) jika URL tersedia
+        if(scriptURL) {
+            document.getElementById('sync-status').style.display = 'block';
+            try {
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify(dataObj)
+                });
+                console.log("Data synced to cloud");
+            } catch (e) {
+                console.error("Sync failed", e);
+            }
+            document.getElementById('sync-status').style.display = 'none';
+        }
+
+        // 2. Generate WhatsApp Report
+        const d = new Date(dataObj.tanggal);
+        const hariArr = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+        const tglFmt = `${d.getDate()} ${d.toLocaleString('id-ID', {month:'short'})} ${d.getFullYear()}`;
+
+        const report = `*LAPORAN DEBIT BENDUNG*
+Petugas: ${p}
+Lokasi: ${dataObj.bendung}
+
+Hari      : ${hariArr[d.getDay()]}
+Tanggal   : ${tglFmt}
+Jam       : ${dataObj.jam} WIB
+TMA       : ${dataObj.tma} cm
+DI        : ${dataObj.di}
+
+━━━━━━━━━━━━━━━━━━
+*1. DEBIT UTAMA*
+Monitoring : ${dataObj.mon} Cm³/dt
+
+● Intake Kiri (${document.getElementById('lk').value} ha)
+Qact: ${dataObj.qk} | Qd: ${dataObj.dk} m³/dt
+
+● Intake Kanan (${document.getElementById('lr').value} ha)
+Qact: ${dataObj.qr} | Qd: ${dataObj.dr} m³/dt
+
+━━━━━━━━━━━━━━━━━━
+*2. KONDISI*
+Cuaca  : ${dataObj.cuaca}
+Status : ${dataObj.status.toUpperCase()}
+
+*3. TANAM*
+MT ${dataObj.mt} | Real: ${document.getElementById('real').value} ha (${persen}%)
+
+Lampiran: Foto Peilschale Terlampir.`;
+
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(report)}`);
+    }
+</script>
+</body>
+</html>
