@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1C1C1E">
+    
+    <!-- Meta untuk PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Monitoring Debit Bendung v8.0</title>
+    <meta name="apple-mobile-web-app-title" content="Debit Monitoring">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <title>Monitoring Debit Bendung v8.0 Pro</title>
+    
+    <!-- Web Manifest (Supaya bisa Add to Home Screen) -->
+    <link rel="manifest" href='data:application/json,{"name":"Monitoring Debit Bendung V8","short_name":"DebitPro","start_url":".","display":"standalone","background_color":"#1C1C1E","theme_color":"#1C1C1E","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3105/3105807.png","sizes":"512x512","type":"image/png"}]}'>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -29,7 +37,6 @@
             transition: all 0.5s ease;
         }
         
-        /* Status Theme Modifiers */
         body.theme-siaga { background-color: #FFF9F2; }
         body.theme-bahaya { background-color: #FFF2F2; }
         .hero-siaga { background: linear-gradient(180deg, var(--ios-orange) 0%, #E68600 100%) !important; }
@@ -60,8 +67,12 @@
         input, select { 
             width: 100%; height: 52px; border: 1.5px solid rgba(0,0,0,0.08); border-radius: 16px; 
             background: rgba(255,255,255,1); padding: 0 16px; font-size: 14px; margin-bottom: 10px; font-family: inherit;
+            transition: all 0.2s ease;
         }
         input:focus { border-color: var(--ios-blue); outline: none; box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+        
+        input.invalid, select.invalid { border-color: var(--ios-red) !important; background-color: #FFF2F2 !important; }
+        .camera-box.invalid { border-color: var(--ios-red) !important; background: rgba(255, 59, 48, 0.05) !important; }
 
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .grid-3 input { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
@@ -73,6 +84,7 @@
             margin-bottom: 15px;
         }
         .btn-send:active { transform: scale(0.96); }
+        .btn-send:disabled { background: #AEAEB2; box-shadow: none; opacity: 0.6; }
 
         .pro-label { font-size: 9px; font-weight: 800; opacity: 0.5; display: block; margin-bottom: 6px; color: #333; }
         .auto-calc { background: var(--ios-blue); color: white; padding: 2px 8px; border-radius: 6px; font-size: 10px; float: right; }
@@ -80,23 +92,34 @@
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121214; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s ease; }
         #splash-screen.fade-out { opacity: 0; visibility: hidden; }
 
+        .camera-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .camera-box {
-            border: 2px dashed rgba(0,0,0,0.1); border-radius: 20px; padding: 20px; text-align: center; margin-bottom: 15px;
-            color: var(--ios-blue); font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.3s;
+            border: 2px dashed var(--ios-blue); border-radius: 20px; padding: 15px; text-align: center;
+            color: var(--ios-blue); font-weight: 700; font-size: 11px; cursor: pointer; transition: 0.3s;
+            background: rgba(0,122,255,0.03);
         }
-        .camera-box:active { background: rgba(0,122,255,0.05); }
+        .preview-img { width: 100%; border-radius: 12px; margin-top: 10px; display: none; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); object-fit: cover; aspect-ratio: 4/3; }
+        
+        .error-toast { 
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); 
+            background: var(--ios-red); color: white; padding: 12px 24px; border-radius: 20px;
+            font-size: 13px; font-weight: 700; z-index: 1000; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
 
 <div id="splash-screen">
     <i class="fa-solid fa-droplet" style="font-size:55px; color:var(--ios-blue); filter: drop-shadow(0 0 15px rgba(0,122,255,0.5));"></i>
-    <h2 style="color:white; margin-top:20px; letter-spacing:4px; font-weight:800; font-size:16px; text-align:center;">MONITORING DEBIT<br>BENDUNG V8.0</h2>
+    <h2 style="color:white; margin-top:20px; letter-spacing:4px; font-weight:800; font-size:16px; text-align:center;">MONITORING DEBIT<br>BENDUNG V8.0 PRO</h2>
 </div>
+
+<div id="error-toast" class="error-toast">Lengkapi semua kolom yang berwarna merah!</div>
 
 <div class="container">
     <div class="hero-pro" id="hero" style="margin-left:-16px; margin-right:-16px;">
-        <div class="badge-system">OFFICIAL ENTERPRISE</div>
+        <div class="badge-system">OFFICIAL ENTERPRISE (PWA)</div>
         <p class="instansi-title">UPT PSDA BONDOYUDO BARU</p>
         <h1 class="main-title">Debit Monitoring</h1>
         
@@ -105,7 +128,7 @@
                 <span id="day-info" style="font-size:9px; font-weight:800; opacity:0.5; display:block; letter-spacing:1px; margin-bottom:4px; text-transform:uppercase;">...</span>
                 <div id="live-time" style="font-family:'JetBrains Mono'; font-size:22px; font-weight:700;">00:00:00</div>
             </div>
-            <div id="w-icon" style="background:rgba(255,255,255,0.1); width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+            <div id="w-icon">
                 <i class="fa-solid fa-sun" style="color:#FFD60A; font-size:24px;"></i>
             </div>
         </div>
@@ -114,97 +137,165 @@
     <!-- 1. Administrasi -->
     <div class="card" style="margin-top:-35px;">
         <span class="card-label"><i class="fa-solid fa-user-check"></i> 1. Administrasi & Petugas</span>
-        <input type="text" id="petugas" placeholder="Nama Petugas Pelapor" style="font-weight:700;">
+        <input type="text" id="petugas" placeholder="Nama Petugas Pelapor" style="font-weight:700;" oninput="this.classList.remove('invalid')">
         <div style="display:flex; gap:8px;">
-            <input type="date" id="tgl"><input type="time" id="jam">
+            <input type="date" id="tgl" onchange="this.classList.remove('invalid')">
+            <input type="time" id="jam" onchange="this.classList.remove('invalid')">
         </div>
-        <select id="sDI" onchange="hDI()"><option>DI BARU</option><option>DI POROLINGGO</option><option value="m">LAINNYA...</option></select>
-        <input type="text" id="mDI" style="display:none;" placeholder="Isi Nama DI">
+        <select id="sDI" onchange="hDI(); this.classList.remove('invalid')">
+            <option value="">Pilih Daerah Irigasi...</option>
+            <option>DI BARU</option>
+            <option>DI POROLINGGO</option>
+            <option value="m">LAINNYA...</option>
+        </select>
+        <input type="text" id="mDI" style="display:none;" placeholder="Isi Nama DI Manual" oninput="this.classList.remove('invalid')">
         
-        <select id="sB" onchange="hB()"><option>BENDUNG KARANGDORO</option><option>BENDUNG SUMBERMULYO</option><option value="m">LAINNYA...</option></select>
-        <input type="text" id="mB" style="display:none;" placeholder="Isi Nama Bendung">
+        <select id="sB" onchange="hB(); this.classList.remove('invalid')">
+            <option value="">Pilih Bendung...</option>
+            <option>BENDUNG KARANGDORO</option>
+            <option>BENDUNG SUMBERMULYO</option>
+            <option>BENDUNG POROLINGGO</option>
+            <option value="m">LAINNYA...</option>
+        </select>
+        <input type="text" id="mB" style="display:none;" placeholder="Isi Nama Bendung Manual" oninput="this.classList.remove('invalid')">
     </div>
 
     <!-- 2. Data Teknis -->
     <div class="card">
         <span class="card-label"><i class="fa-solid fa-gauge-high"></i> 2. Data Teknis Debit</span>
-        <span class="pro-label">TINGGI MUKA AIR (CM)</span>
-        <input type="text" id="tma" placeholder="TMA cm (Bangunan Utama)" inputmode="decimal" oninput="fR(this)">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <span class="pro-label">TINGGI MUKA AIR (CM)</span>
+            <select id="trend" onchange="this.classList.remove('invalid')" style="width: 120px; height: 36px; font-size: 12px; padding: 0 10px; border-radius: 10px; margin-bottom: 5px;">
+                <option value="">Pilih Trend...</option>
+                <option value="Tetap">➡ Tetap</option>
+                <option value="Naik">⬆ Naik</option>
+                <option value="Turun">⬇ Turun</option>
+            </select>
+        </div>
+        <input type="text" id="tma" placeholder="TMA cm (Bangunan Utama)" inputmode="decimal" oninput="fR(this); this.classList.remove('invalid')">
         
         <div style="background:rgba(0,122,255,0.06); padding:15px; border-radius:20px; margin-bottom:15px; border:1px solid rgba(0,122,255,0.15);">
             <span class="pro-label" style="color:var(--ios-blue)">MONITORING DEBIT (Cm³/dt)</span>
-            <input type="text" id="mon" placeholder="00.000" inputmode="decimal" oninput="fR(this)" style="margin-bottom:0; font-weight:800; color:var(--ios-blue); font-size: 18px;">
+            <input type="text" id="mon" placeholder="00.000" inputmode="decimal" oninput="fR(this); this.classList.remove('invalid')" style="margin-bottom:0; font-weight:800; color:var(--ios-blue); font-size: 18px;">
         </div>
 
         <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:20px;">
             <span class="pro-label">INTAKE KIRI (Qact vs Qd)</span>
             <div class="grid-3">
-                <input type="text" id="lk" placeholder="Luas" inputmode="decimal" oninput="fR(this)">
-                <input type="text" id="qk" placeholder="Qact" inputmode="decimal" oninput="fR(this); checkAlert('qk','dk')">
-                <input type="text" id="dk" placeholder="Qd" inputmode="decimal" oninput="fR(this); checkAlert('qk','dk')">
+                <input type="text" id="lk" placeholder="Luas" inputmode="decimal" oninput="fR(this); this.classList.remove('invalid')">
+                <input type="text" id="qk" placeholder="Qact" inputmode="decimal" oninput="fR(this); checkAlert('qk','dk'); this.classList.remove('invalid')">
+                <input type="text" id="dk" placeholder="Qd" inputmode="decimal" oninput="fR(this); checkAlert('qk','dk'); this.classList.remove('invalid')">
             </div>
         </div>
         <div style="background:rgba(0,0,0,0.03); padding:15px; border-radius:20px; margin-top:12px;">
             <span class="pro-label">INTAKE KANAN (Qact vs Qd)</span>
             <div class="grid-3">
-                <input type="text" id="lr" placeholder="Luas" inputmode="decimal" oninput="fR(this)">
-                <input type="text" id="qr" placeholder="Qact" inputmode="decimal" oninput="fR(this); checkAlert('qr','dr')">
-                <input type="text" id="dr" placeholder="Qd" inputmode="decimal" oninput="fR(this); checkAlert('qr','dr')">
+                <input type="text" id="lr" placeholder="Luas" inputmode="decimal" oninput="fR(this); this.classList.remove('invalid')">
+                <input type="text" id="qr" placeholder="Qact" inputmode="decimal" oninput="fR(this); checkAlert('qr','dr'); this.classList.remove('invalid')">
+                <input type="text" id="dr" placeholder="Qd" inputmode="decimal" oninput="fR(this); checkAlert('qr','dr'); this.classList.remove('invalid')">
             </div>
         </div>
     </div>
 
-    <!-- 3. Kondisi -->
+    <!-- 3. Kondisi & Dual Foto -->
     <div class="card">
-        <span class="card-label"><i class="fa-solid fa-mountain-sun"></i> 3. Kondisi & Realisasi</span>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <select id="cuaca" onchange="uW()"><option>Cerah</option><option>Mendung</option><option>Hujan</option></select>
-            <select id="status" onchange="uS()"><option value="Aman">Aman</option><option value="Siaga">Siaga</option><option value="Bahaya">Bahaya</option></select>
+        <span class="card-label"><i class="fa-solid fa-camera"></i> 3. Kondisi & Dokumentasi</span>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+            <select id="cuaca" onchange="uW(); this.classList.remove('invalid')">
+                <option value="">Pilih Cuaca...</option>
+                <option value="Cerah">Cerah</option>
+                <option value="Mendung">Mendung</option>
+                <option value="Hujan">Hujan</option>
+            </select>
+            <select id="status" onchange="uS(); this.classList.remove('invalid')">
+                <option value="">Pilih Status...</option>
+                <option value="Aman">Aman</option>
+                <option value="Siaga">Siaga</option>
+                <option value="Bahaya">Bahaya</option>
+            </select>
         </div>
         
-        <div style="background:rgba(0,0,0,0.02); padding:15px; border-radius:20px; margin-top:10px;">
-            <span class="pro-label">MASA TANAM & REALISASI <span id="persen-badge" class="auto-calc">0%</span></span>
-            <div style="display:grid; grid-template-columns:0.6fr 1fr 1fr; gap:8px;">
-                <select id="mt" style="margin:0;"><option value="1">MT 1</option><option value="2" selected>MT 2</option><option value="3">MT 3</option></select>
-                <input type="text" id="baku" placeholder="Baku" inputmode="decimal" oninput="fR(this); calcTanam()" style="margin:0;">
-                <input type="text" id="real" placeholder="Real" inputmode="decimal" oninput="fR(this); calcTanam()" style="margin:0;">
-            </div>
+        <div class="camera-grid">
+            <label class="camera-box" id="box-intake" for="cam-intake">
+                <i class="fa-solid fa-water" style="font-size:18px; margin-bottom:6px; display:block;"></i>
+                FOTO INTAKE
+                <input type="file" id="cam-intake" accept="image/*" capture="camera" style="display:none;" onchange="processPhoto(this, 'intake')">
+                <img id="preview-intake" class="preview-img">
+            </label>
+            <label class="camera-box" id="box-limpasan" for="cam-limpasan">
+                <i class="fa-solid fa-bridge" style="font-size:18px; margin-bottom:6px; display:block;"></i>
+                FOTO LIMPASAN
+                <input type="file" id="cam-limpasan" accept="image/*" capture="camera" style="display:none;" onchange="processPhoto(this, 'limpasan')">
+                <img id="preview-limpasan" class="preview-img">
+            </label>
         </div>
 
-        <label class="camera-box" for="cam-input">
-            <i class="fa-solid fa-camera" style="font-size:20px; margin-bottom:8px; display:block;"></i>
-            AMBIL FOTO PEILSCHALE TMA
-            <input type="file" id="cam-input" accept="image/*" capture="camera" style="display:none;">
-        </label>
+        <div style="background:rgba(0,0,0,0.02); padding:15px; border-radius:20px;">
+            <span class="pro-label">REALISASI TANAM <span id="persen-badge" class="auto-calc">0%</span></span>
+            <div style="display:grid; grid-template-columns:0.6fr 1fr 1fr; gap:8px;">
+                <select id="mt" onchange="this.classList.remove('invalid')" style="margin:0;"><option value="">MT...</option><option value="1">MT 1</option><option value="2">MT 2</option><option value="3">MT 3</option></select>
+                <input type="text" id="baku" placeholder="Baku" inputmode="decimal" oninput="fR(this); calcTanam(); this.classList.remove('invalid')" style="margin:0;">
+                <input type="text" id="real" placeholder="Real" inputmode="decimal" oninput="fR(this); calcTanam(); this.classList.remove('invalid')" style="margin:0;">
+            </div>
+        </div>
     </div>
 
-    <button class="btn-send" onclick="processReport()"><i class="fa-brands fa-whatsapp" style="font-size:22px;"></i> GENERATE & KIRIM DATA</button>
+    <button id="main-btn" class="btn-send" onclick="validateAndSend()"><i class="fa-brands fa-whatsapp" style="font-size:22px;"></i> GENERATE & KIRIM DATA</button>
     
-    <div id="sync-status" style="text-align:center; font-size:10px; font-weight:700; color:var(--ios-blue); opacity:0.8; display:none;">
-        <i class="fa-solid fa-circle-notch fa-spin"></i> MENYINKRONKAN KE DATABASE...
+    <div id="sync-status" style="text-align:center; font-size:11px; font-weight:700; color:var(--ios-blue); display:none; margin-bottom: 20px;">
+        <i class="fa-solid fa-circle-notch fa-spin"></i> MEMPROSES DATA & UPLOAD DUAL FOTO...
     </div>
 
-    <div style="text-align:center; margin-top:40px; font-size:10px; opacity:0.3; font-weight:800; letter-spacing:2px;">OFFICIAL SYSTEM BY KORLAP BANYUWANGI</div>
+    <div style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; font-weight:800; letter-spacing:2px;">OFFICIAL SYSTEM BY KORLAP BANYUWANGI</div>
 </div>
 
+<canvas id="hidden-canvas" style="display:none;"></canvas>
+
 <script>
-    // --- CONFIGURATION ---
-    const scriptURL = ""; // TEMPEL URL GOOGLE APPS SCRIPT ANDA DI SINI
+    // ---------------------------------------------------------
+    // SERVICE WORKER (UNTUK PWA OFFLINE SUPPORT)
+    // ---------------------------------------------------------
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            const CACHE_NAME = 'debit-pro-v8-cache';
+            const urlsToCache = ['/'];
+            self.addEventListener('install', event => {
+                event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+            });
+            self.addEventListener('fetch', event => {
+                event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
+            });
+        `;
+        const blob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl);
+    }
+
+    const scriptURL = ""; 
+    let imgIntake = null;
+    let imgLimpasan = null;
 
     function fR(input) {
         let v = input.value.replace(/[^0-9]/g, '');
         if (v) input.value = parseInt(v).toLocaleString('id-ID');
     }
 
-    function hDI() { document.getElementById('mDI').style.display = document.getElementById('sDI').value==='m'?'block':'none'; }
-    function hB() { document.getElementById('mB').style.display = document.getElementById('sB').value==='m'?'block':'none'; }
+    function hDI() { 
+        const isManual = document.getElementById('sDI').value==='m';
+        document.getElementById('mDI').style.display = isManual?'block':'none'; 
+    }
+    function hB() { 
+        const isManual = document.getElementById('sB').value==='m';
+        document.getElementById('mB').style.display = isManual?'block':'none'; 
+    }
     
     function uW() {
         const c = document.getElementById('cuaca').value;
         const i = document.getElementById('w-icon');
         if(c==='Cerah') i.innerHTML = '<i class="fa-solid fa-sun" style="color:#FFD60A; font-size:24px;"></i>';
         else if(c==='Mendung') i.innerHTML = '<i class="fa-solid fa-cloud" style="color:#AEAEB2; font-size:24px;"></i>';
-        else i.innerHTML = '<i class="fa-solid fa-cloud-showers-heavy" style="color:var(--ios-blue); font-size:24px;"></i>';
+        else if(c==='Hujan') i.innerHTML = '<i class="fa-solid fa-cloud-showers-heavy" style="color:var(--ios-blue); font-size:24px;"></i>';
     }
 
     function uS() {
@@ -233,12 +324,71 @@
         }
     }
 
+    function processPhoto(input, type) {
+        if (!input.files || !input.files[0]) return;
+        const box = document.getElementById(type === 'intake' ? 'box-intake' : 'box-limpasan');
+        box.classList.remove('invalid');
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.getElementById('hidden-canvas');
+                const ctx = canvas.getContext('2d');
+                const scale = 1280 / img.width;
+                canvas.width = 1280;
+                canvas.height = img.height * scale;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                const bendungRaw = document.getElementById('sB').value==='m'?document.getElementById('mB').value:document.getElementById('sB').value;
+                const bendung = bendungRaw || "Bendung";
+                const trend = document.getElementById('trend').value;
+                const timeStr = new Date().toLocaleString('id-ID');
+                const grad = ctx.createLinearGradient(0, canvas.height - 200, 0, canvas.height);
+                grad.addColorStop(0, 'rgba(0,0,0,0)');
+                grad.addColorStop(1, 'rgba(0,0,0,0.85)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, canvas.height - 200, canvas.width, 200);
+                ctx.fillStyle = "white";
+                ctx.font = "bold 42px 'Plus Jakarta Sans'";
+                ctx.fillText(`📍 ${bendung.toUpperCase()} [${type.toUpperCase()}]`, 40, canvas.height - 110);
+                ctx.font = "32px 'JetBrains Mono'";
+                ctx.fillText(`⏱ ${timeStr} WIB | DEBIT: ${trend.toUpperCase()}`, 40, canvas.height - 55);
+                ctx.font = "bold 24px sans-serif";
+                ctx.textAlign = "right";
+                ctx.fillText("V8.0 PRO MONITORING", canvas.width - 40, canvas.height - 55);
+                const finalData = canvas.toDataURL('image/jpeg', 0.8);
+                if(type === 'intake') {
+                    imgIntake = finalData;
+                    document.getElementById('preview-intake').src = finalData;
+                    document.getElementById('preview-intake').style.display = 'block';
+                } else {
+                    imgLimpasan = finalData;
+                    document.getElementById('preview-limpasan').src = finalData;
+                    document.getElementById('preview-limpasan').style.display = 'block';
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function getHari(date) {
+        const hariArr = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+        return hariArr[date.getDay()];
+    }
+
+    function formatTgl(dateStr) {
+        if(!dateStr) return "-";
+        const d = new Date(dateStr);
+        const blnArr = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+        return `${d.getDate()} ${blnArr[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
     function clock() {
         const n = new Date();
-        document.getElementById('live-time').innerText = n.toLocaleTimeString('id-ID').replace(/\./g, ':');
-        const hariArr = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
-        const blnArr = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-        document.getElementById('day-info').innerText = `${hariArr[n.getDay()]}, ${n.getDate()} ${blnArr[n.getMonth()]}`;
+        const timeEl = document.getElementById('live-time');
+        if(timeEl) timeEl.innerText = n.toLocaleTimeString('id-ID').replace(/\./g, ':');
+        const dayEl = document.getElementById('day-info');
+        if(dayEl) dayEl.innerText = `${getHari(n)}, ${formatTgl(n.toISOString().split('T')[0])}`;
     }
 
     window.onload = () => {
@@ -248,85 +398,144 @@
         setTimeout(() => document.getElementById('splash-screen').classList.add('fade-out'), 1600);
     };
 
-    async function processReport() {
-        const p = document.getElementById('petugas').value;
-        if(!p) { alert("Harap isi Nama Petugas terlebih dahulu!"); return; }
-
-        const di = document.getElementById('sDI').value==='m'?document.getElementById('mDI').value:document.getElementById('sDI').value;
-        const b = document.getElementById('sB').value==='m'?document.getElementById('mB').value:document.getElementById('sB').value;
-        const bakuNum = parseFloat(document.getElementById('baku').value.replace(/\./g, '')) || 0;
-        const realNum = parseFloat(document.getElementById('real').value.replace(/\./g, '')) || 0;
-        const persen = bakuNum > 0 ? ((realNum / bakuNum) * 100).toFixed(0) : "0";
-
-        const dataObj = {
-            petugas: p,
-            tanggal: document.getElementById('tgl').value,
-            jam: document.getElementById('jam').value,
-            di: di.toUpperCase(),
-            bendung: b.toUpperCase(),
-            tma: document.getElementById('tma').value,
-            mon: document.getElementById('mon').value,
-            qk: document.getElementById('qk').value,
-            dk: document.getElementById('dk').value,
-            qr: document.getElementById('qr').value,
-            dr: document.getElementById('dr').value,
-            cuaca: document.getElementById('cuaca').value,
-            status: document.getElementById('status').value,
-            mt: document.getElementById('mt').value,
-            persen: persen
-        };
-
-        // 1. Kirim ke Database (Google Sheets) jika URL tersedia
-        if(scriptURL) {
-            document.getElementById('sync-status').style.display = 'block';
-            try {
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    body: JSON.stringify(dataObj)
-                });
-                console.log("Data synced to cloud");
-            } catch (e) {
-                console.error("Sync failed", e);
+    function validateAndSend() {
+        let isValid = true;
+        const requiredIds = ['petugas', 'tgl', 'jam', 'sDI', 'sB', 'trend', 'tma', 'mon', 'lk', 'qk', 'dk', 'lr', 'qr', 'dr', 'cuaca', 'status', 'mt', 'baku', 'real'];
+        
+        requiredIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el.value || el.value === "") {
+                el.classList.add('invalid');
+                isValid = false;
+            } else {
+                el.classList.remove('invalid');
             }
-            document.getElementById('sync-status').style.display = 'none';
+        });
+
+        if (document.getElementById('sDI').value === 'm' && !document.getElementById('mDI').value) {
+            document.getElementById('mDI').classList.add('invalid'); isValid = false;
+        }
+        if (document.getElementById('sB').value === 'm' && !document.getElementById('mB').value) {
+            document.getElementById('mB').classList.add('invalid'); isValid = false;
         }
 
-        // 2. Generate WhatsApp Report
-        const d = new Date(dataObj.tanggal);
-        const hariArr = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
-        const tglFmt = `${d.getDate()} ${d.toLocaleString('id-ID', {month:'short'})} ${d.getFullYear()}`;
+        if (!imgIntake) { document.getElementById('box-intake').classList.add('invalid'); isValid = false; }
+        if (!imgLimpasan) { document.getElementById('box-limpasan').classList.add('invalid'); isValid = false; }
 
-        const report = `*LAPORAN DEBIT BENDUNG*
-Petugas: ${p}
-Lokasi: ${dataObj.bendung}
+        if (!isValid) {
+            const firstInvalid = document.querySelector('.invalid');
+            if (firstInvalid) firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const toast = document.getElementById('error-toast');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            return;
+        }
+        processReport();
+    }
 
-Hari      : ${hariArr[d.getDay()]}
-Tanggal   : ${tglFmt}
-Jam       : ${dataObj.jam} WIB
-TMA       : ${dataObj.tma} cm
-DI        : ${dataObj.di}
+    async function processReport() {
+        const p = document.getElementById('petugas').value;
+        const rawDI = document.getElementById('sDI').value==='m'?document.getElementById('mDI').value:document.getElementById('sDI').value;
+        const rawB = document.getElementById('sB').value==='m'?document.getElementById('mB').value:document.getElementById('sB').value;
+        const di = rawDI.toUpperCase();
+        const b = rawB.toUpperCase();
+        const tr = document.getElementById('trend').value;
+        const tma = document.getElementById('tma').value;
+        const mon = document.getElementById('mon').value;
+        
+        // Intake Kiri
+        const lk = document.getElementById('lk').value;
+        const qk = document.getElementById('qk').value;
+        const dk = document.getElementById('dk').value;
+        
+        // Intake Kanan
+        const lr = document.getElementById('lr').value;
+        const qr = document.getElementById('qr').value;
+        const dr = document.getElementById('dr').value;
+
+        const cuaca = document.getElementById('cuaca').value;
+        const status = document.getElementById('status').value;
+        const mt = document.getElementById('mt').value;
+        const baku = document.getElementById('baku').value;
+        const real = document.getElementById('real').value;
+        const bakuNum = parseFloat(baku.replace(/\./g, '')) || 0;
+        const realNum = parseFloat(real.replace(/\./g, '')) || 0;
+        const persen = bakuNum > 0 ? ((realNum / bakuNum) * 100).toFixed(0) : "0";
+
+        const btn = document.getElementById('main-btn');
+        const sync = document.getElementById('sync-status');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> UPLOADING...';
+        sync.style.display = 'block';
+
+        let link_intake = "lh3... (Proses)";
+        let link_limpasan = "lh3... (Proses)";
+
+        if(scriptURL) {
+            try { 
+                const response = await fetch(scriptURL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({
+                        petugas: p, tanggal: document.getElementById('tgl').value, jam: document.getElementById('jam').value,
+                        di: di, bendung: b, tma: tma, trend: tr, mon: mon, 
+                        qk: qk, dk: dk, qr: qr, dr: dr, cuaca: cuaca, status: status,
+                        mt: mt, persen: persen, imageIntake: imgIntake, imageLimpasan: imgLimpasan
+                    }) 
+                });
+                const resData = await response.json();
+                if(resData.url_intake) link_intake = resData.url_intake;
+                if(resData.url_limpasan) link_limpasan = resData.url_limpasan;
+            } 
+            catch (e) { 
+                console.error("Cloud Error", e); 
+                link_intake = "Gagal Upload";
+                link_limpasan = "Gagal Upload";
+            }
+        }
+
+        const dateVal = new Date(document.getElementById('tgl').value);
+        const report = `*LAPORAN DEBIT AIR*
+Pada bendung ( ${b} )
+Petugas    : ${p}
+Hari       : ${getHari(dateVal)}
+Tanggal    : ${formatTgl(document.getElementById('tgl').value)}
+Jam        : ${document.getElementById('jam').value} WIB
+TMA        : ${tma} cm (hulu bangunan utama)
+Nama DI    : ${di}
 
 ━━━━━━━━━━━━━━━━━━
-*1. DEBIT UTAMA*
-Monitoring : ${dataObj.mon} Cm³/dt
+1. DEBIT pada bangunan Utama.
 
-● Intake Kiri (${document.getElementById('lk').value} ha)
-Qact: ${dataObj.qk} | Qd: ${dataObj.dk} m³/dt
+Monitoring Debit : ${mon} (Cm³/dt)
 
-● Intake Kanan (${document.getElementById('lr').value} ha)
-Qact: ${dataObj.qr} | Qd: ${dataObj.dr} m³/dt
+● intake [ kiri ] (luas layanan : ${lk} ha)
+Qact   : ${qk} m³/dt
+Qd     : ${dk} m³/dt (sesuai RAAR)
+
+● intake [ kanan ] (luas layanan : ${lr} ha)
+Qact   : ${qr} m³/dt
+Qd     : ${dr} m³/dt (sesuai RAAR)
 
 ━━━━━━━━━━━━━━━━━━
-*2. KONDISI*
-Cuaca  : ${dataObj.cuaca}
-Status : ${dataObj.status.toUpperCase()}
+2. Informasi Cuaca
+Cuaca      : ${cuaca}
+Status     : ${status}
+Ket        : Debit ${tr}
 
-*3. TANAM*
-MT ${dataObj.mt} | Real: ${document.getElementById('real').value} ha (${persen}%)
+━━━━━━━━━━━━━━━━━━
+3. Informasi Luas Realisasi tanam.
+Masa Tanam : ${mt}
+Realisasi  : ${real} ha (${persen}% dari luas baku ${baku} ha)
 
-Lampiran: Foto Peilschale Terlampir.`;
+Lampiran:
+1. Foto intake: ${link_intake}
+2. Foto limpasan: ${link_limpasan}
+(terlihat peilschale TMA)`;
 
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(report)}`);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> GENERATE & KIRIM DATA';
+        sync.style.display = 'none';
     }
 </script>
 </body>
