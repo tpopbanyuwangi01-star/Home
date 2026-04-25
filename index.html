@@ -13,7 +13,7 @@
     
     <title>Monitoring Debit Bendung v8.0 Pro</title>
     
-    <!-- Web Manifest (Supaya bisa Add to Home Screen) -->
+    <!-- Web Manifest -->
     <link rel="manifest" href='data:application/json,{"name":"Monitoring Debit Bendung V8","short_name":"DebitPro","start_url":".","display":"standalone","background_color":"#1C1C1E","theme_color":"#1C1C1E","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3105/3105807.png","sizes":"512x512","type":"image/png"}]}'>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -106,6 +106,12 @@
             font-size: 13px; font-weight: 700; z-index: 1000; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             white-space: nowrap;
         }
+
+        .success-toast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); 
+            background: var(--ios-green); color: white; padding: 12px 24px; border-radius: 20px;
+            font-size: 13px; font-weight: 700; z-index: 1000; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
@@ -116,6 +122,7 @@
 </div>
 
 <div id="error-toast" class="error-toast">Lengkapi semua kolom yang berwarna merah!</div>
+<div id="success-toast" class="success-toast">Data Berhasil Disalin ke Clipboard!</div>
 
 <div class="container">
     <div class="hero-pro" id="hero" style="margin-left:-16px; margin-right:-16px;">
@@ -253,26 +260,6 @@
 <canvas id="hidden-canvas" style="display:none;"></canvas>
 
 <script>
-    // ---------------------------------------------------------
-    // SERVICE WORKER (UNTUK PWA OFFLINE SUPPORT)
-    // ---------------------------------------------------------
-    if ('serviceWorker' in navigator) {
-        const swCode = `
-            const CACHE_NAME = 'debit-pro-v8-cache';
-            const urlsToCache = ['/'];
-            self.addEventListener('install', event => {
-                event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
-            });
-            self.addEventListener('fetch', event => {
-                event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
-            });
-        `;
-        const blob = new Blob([swCode], { type: 'text/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(swUrl);
-    }
-
-    // UPDATE: Menggunakan URL Web App yang baru saja di-deploy
     const scriptURL = "https://script.google.com/macros/s/AKfycbwP1FWxZWN1NUrO4ulfHjzkFxAZC9tGe_HvSG3pwvdsAsgm408thHMidLzcYQhFmus3HQ/exec"; 
     let imgIntake = null;
     let imgLimpasan = null;
@@ -444,12 +431,9 @@
         const tma = document.getElementById('tma').value;
         const mon = document.getElementById('mon').value;
         
-        // Intake Kiri
         const lk = document.getElementById('lk').value;
         const qk = document.getElementById('qk').value;
         const dk = document.getElementById('dk').value;
-        
-        // Intake Kanan
         const lr = document.getElementById('lr').value;
         const qr = document.getElementById('qr').value;
         const dr = document.getElementById('dr').value;
@@ -469,33 +453,32 @@
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> UPLOADING...';
         sync.style.display = 'block';
 
-        let link_intake = "lh3... (Proses)";
-        let link_limpasan = "lh3... (Proses)";
+        let link_intake = "Uploading...";
+        let link_limpasan = "Uploading...";
 
-        if(scriptURL) {
-            try { 
-                const response = await fetch(scriptURL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({
-                        petugas: p, tanggal: document.getElementById('tgl').value, jam: document.getElementById('jam').value,
-                        di: di, bendung: b, tma: tma, trend: tr, mon: mon, 
-                        qk: qk, dk: dk, qr: qr, dr: dr, cuaca: cuaca, status: status,
-                        mt: mt, persen: persen, imageIntake: imgIntake, imageLimpasan: imgLimpasan
-                    }) 
-                });
-                const resData = await response.json();
-                if(resData.url_intake) link_intake = resData.url_intake;
-                if(resData.url_limpasan) link_limpasan = resData.url_limpasan;
-            } 
-            catch (e) { 
-                console.error("Cloud Error", e); 
-                link_intake = "Gagal Upload";
-                link_limpasan = "Gagal Upload";
-            }
+        // 1. Upload ke Google Sheet
+        try { 
+            const response = await fetch(scriptURL, { 
+                method: 'POST', 
+                body: JSON.stringify({
+                    petugas: p, tanggal: document.getElementById('tgl').value, jam: document.getElementById('jam').value,
+                    di: di, bendung: b, tma: tma, trend: tr, mon: mon, 
+                    qk: qk, dk: dk, qr: qr, dr: dr, cuaca: cuaca, status: status,
+                    mt: mt, persen: persen, imageIntake: imgIntake, imageLimpasan: imgLimpasan
+                }) 
+            });
+            const resData = await response.json();
+            if(resData.url_intake) link_intake = resData.url_intake;
+            if(resData.url_limpasan) link_limpasan = resData.url_limpasan;
+        } 
+        catch (e) { 
+            console.error("Cloud Error", e); 
+            link_intake = "(Link Gagal)";
+            link_limpasan = "(Link Gagal)";
         }
 
         const dateVal = new Date(document.getElementById('tgl').value);
-        const report = `*LAPORAN DEBIT AIR*
+        const reportText = `*LAPORAN DEBIT AIR*
 Pada bendung ( ${b} )
 
 Petugas    : ${p}
@@ -532,12 +515,33 @@ Realisasi  : ${real} ha (${persen}% dari luas baku ${baku} ha)
 Lampiran:
 1. Foto intake: ${link_intake}
 2. Foto limpasan: ${link_limpasan}
-(terlihat peilschale TMA)`;
+(V8.0 PRO SYSTEM)`;
 
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(report)}`);
+        // 2. Salin ke Clipboard (Fitur Backup)
+        try {
+            const el = document.createElement('textarea');
+            el.value = reportText;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const successToast = document.getElementById('success-toast');
+            successToast.style.display = 'block';
+            setTimeout(() => { successToast.style.display = 'none'; }, 2500);
+        } catch (err) {
+            console.log("Clipboard fail");
+        }
+
+        // 3. Alihkan ke WhatsApp
+        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(reportText)}`;
+        
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> GENERATE & KIRIM DATA';
         sync.style.display = 'none';
+
+        // Redirect langsung
+        window.location.href = waUrl;
     }
 </script>
 </body>
