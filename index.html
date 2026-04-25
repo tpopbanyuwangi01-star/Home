@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1C1C1E">
-    <title>Monitoring Debit Bendung v9.0 Pro</title>
+    <title>Monitoring Debit Bendung v9.1 Pro</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -60,7 +60,7 @@
         input:focus { border-color: var(--ios-blue); background: white; outline: none; }
         .input-error { border-color: var(--error-border) !important; background-color: var(--error-bg) !important; }
 
-        #petugas { text-transform: uppercase; }
+        .calc-info { font-size: 12px; color: var(--ios-blue); font-weight: 700; margin-top: -8px; margin-bottom: 12px; display: block; text-align: right; }
 
         .camera-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
         .camera-box {
@@ -101,7 +101,7 @@
 
 <div id="splash-screen">
     <i class="fa-solid fa-droplet" style="font-size:50px; color:var(--ios-blue);"></i>
-    <h2 style="color:white; margin-top:20px; letter-spacing:3px; font-weight:800; font-size:14px;">DEBIT PRO V9.0</h2>
+    <h2 style="color:white; margin-top:20px; letter-spacing:3px; font-weight:800; font-size:14px;">DEBIT PRO V9.1</h2>
 </div>
 
 <div class="btn-home-container">
@@ -193,11 +193,17 @@
     <!-- Section 4: Realisasi Tanam -->
     <div class="card">
         <span class="card-label"><i class="fa-solid fa-leaf"></i> 4. Realisasi Tanam</span>
-        <input type="text" id="mt" placeholder="Masa Tanam (Contoh: MT I 2024)">
+        <select id="mt">
+            <option value="">Pilih Masa Tanam...</option>
+            <option value="MT 1">MT 1</option>
+            <option value="MT 2">MT 2</option>
+            <option value="MT 3">MT 3</option>
+        </select>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <input type="number" id="real" placeholder="Luas Realisasi (ha)" step="any">
-            <input type="number" id="baku" placeholder="Luas Baku (ha)" step="any">
+            <input type="number" id="real" placeholder="Luas Realisasi (ha)" step="any" oninput="calcPersen()">
+            <input type="number" id="baku" placeholder="Luas Baku (ha)" step="any" oninput="calcPersen()">
         </div>
+        <span class="calc-info" id="persen-info">Prosentase: 0%</span>
     </div>
 
     <!-- Section 5: Foto -->
@@ -227,7 +233,7 @@
         <span class="footer-logo">BONDOYUDO BARU</span>
         <div class="footer-divider"></div>
         <p class="footer-tagline">Sistem Informasi Monitoring Debit Digital<br>UPT PSDA WILAYAH SUNGAI BONDOYUDO BARU</p>
-        <p class="footer-copyright">© 2024 DEBIT PRO V9.0 • DIGITAL REPORTING</p>
+        <p class="footer-copyright">© 2024 DEBIT PRO V9.1 • DIGITAL REPORTING</p>
     </footer>
 </div>
 
@@ -240,6 +246,20 @@
         }, err => {
             currentCoords = "GPS Disabled";
         });
+    }
+
+    function calcPersen() {
+        const real = parseFloat(document.getElementById('real').value) || 0;
+        const baku = parseFloat(document.getElementById('baku').value) || 0;
+        const info = document.getElementById('persen-info');
+        
+        if (baku > 0) {
+            const p = ((real / baku) * 100).toFixed(2);
+            info.innerText = `Prosentase: ${p}%`;
+            info.style.color = 'var(--ios-blue)';
+        } else {
+            info.innerText = `Prosentase: 0%`;
+        }
     }
 
     function getHari(dateStr) {
@@ -335,7 +355,6 @@
             return;
         }
 
-        // Ambil Nilai
         const p = document.getElementById('petugas').value;
         const b = document.getElementById('sB').value;
         const di = document.getElementById('sDI').value;
@@ -356,11 +375,10 @@
         const tr = document.getElementById('trend').value;
 
         const mt = document.getElementById('mt').value || "-";
-        const real = document.getElementById('real').value || "0";
-        const baku = document.getElementById('baku').value || "1"; // avoid div zero
-        const persen = ((parseFloat(real) / parseFloat(baku)) * 100).toFixed(2);
+        const real = parseFloat(document.getElementById('real').value) || 0;
+        const baku = parseFloat(document.getElementById('baku').value) || 1;
+        const persen = ((real / baku) * 100).toFixed(2);
 
-        // Link Foto (Karena di browser lokal, kita asumsikan terlampir manual atau diupload via sistem lain)
         const link_intake = "[Terlampir di bawah]";
         const link_limpasan = "[Terlampir di bawah]";
 
