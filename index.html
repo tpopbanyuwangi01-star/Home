@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1C1C1E">
-    <title>Monitoring Debit Bendung v9.1 Pro</title>
+    <title>Monitoring Debit Bendung v9.2 Pro</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -58,6 +58,10 @@
             background: #F9F9FB; padding: 0 15px; font-size: 14px; margin-bottom: 12px; font-family: inherit;
         }
         input:focus { border-color: var(--ios-blue); background: white; outline: none; }
+        
+        /* Force uppercase for names */
+        #petugas { text-transform: uppercase; }
+
         .input-error { border-color: var(--error-border) !important; background-color: var(--error-bg) !important; }
 
         .calc-info { font-size: 12px; color: var(--ios-blue); font-weight: 700; margin-top: -8px; margin-bottom: 12px; display: block; text-align: right; }
@@ -101,7 +105,7 @@
 
 <div id="splash-screen">
     <i class="fa-solid fa-droplet" style="font-size:50px; color:var(--ios-blue);"></i>
-    <h2 style="color:white; margin-top:20px; letter-spacing:3px; font-weight:800; font-size:14px;">DEBIT PRO V9.1</h2>
+    <h2 style="color:white; margin-top:20px; letter-spacing:3px; font-weight:800; font-size:14px;">DEBIT PRO V9.2</h2>
 </div>
 
 <div class="btn-home-container">
@@ -127,7 +131,8 @@
     <!-- Section 1: Administrasi -->
     <div class="card card-overlap">
         <span class="card-label"><i class="fa-solid fa-user-shield"></i> 1. Administrasi</span>
-        <input type="text" id="petugas" placeholder="NAMA PETUGAS PELAPOR" oninput="validateField(this)">
+        <!-- Perbaikan: oninput="handleNameInput(this)" untuk paksa kapital -->
+        <input type="text" id="petugas" placeholder="NAMA PETUGAS PELAPOR" oninput="handleNameInput(this)">
         <div style="display:flex; gap:10px;">
             <input type="date" id="tgl" onchange="validateField(this)">
             <input type="time" id="jam" onchange="validateField(this)">
@@ -233,7 +238,7 @@
         <span class="footer-logo">BONDOYUDO BARU</span>
         <div class="footer-divider"></div>
         <p class="footer-tagline">Sistem Informasi Monitoring Debit Digital<br>UPT PSDA WILAYAH SUNGAI BONDOYUDO BARU</p>
-        <p class="footer-copyright">© 2024 DEBIT PRO V9.1 • DIGITAL REPORTING</p>
+        <p class="footer-copyright">© 2024 DEBIT PRO V9.2 • DIGITAL REPORTING</p>
     </footer>
 </div>
 
@@ -246,6 +251,12 @@
         }, err => {
             currentCoords = "GPS Disabled";
         });
+    }
+
+    // Fungsi paksa Kapital Nama Petugas
+    function handleNameInput(el) {
+        el.value = el.value.toUpperCase();
+        validateField(el);
     }
 
     function calcPersen() {
@@ -379,9 +390,6 @@
         const baku = parseFloat(document.getElementById('baku').value) || 1;
         const persen = ((real / baku) * 100).toFixed(2);
 
-        const link_intake = "[Terlampir di bawah]";
-        const link_limpasan = "[Terlampir di bawah]";
-
         const reportText = `*LAPORAN DEBIT AIR*
 Pada bendung ( ${b} )
 
@@ -415,8 +423,8 @@ Masa Tanam : ${mt}
 Realisasi  : ${real} ha (${persen}% dari luas baku ${baku} ha)
 
 Lampiran:
-1. Foto intake: ${link_intake}
-2. Foto limpasan: ${link_limpasan}`;
+1. Foto intake: [Terlampir]
+2. Foto limpasan: [Terlampir]`;
 
         const waUrl = `https://wa.me/?text=${encodeURIComponent(reportText)}`;
         window.open(waUrl, '_blank');
