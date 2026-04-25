@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1C1C1E">
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Debit Monitoring">
-    <meta name="mobile-web-app-capable" content="yes">
-    
-    <title>Monitoring Debit Bendung v8.1 Pro</title>
+    <title>Monitoring Debit Bendung v8.6 Pro</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -28,9 +23,9 @@
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding-bottom: 40px; background-color: #F2F2F7; overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background-color: #F2F2F7; overflow-x: hidden; color: #1C1C1E; }
 
-        /* Adaptif Floating Home Button */
+        /* Floating Home Button */
         .btn-home-container {
             position: fixed;
             top: 20px;
@@ -48,320 +43,338 @@
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border: 1.5px solid var(--glass-border);
-            border-radius: 16px; /* Squircle style */
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--home-icon);
             text-decoration: none;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255,255,255,0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .home-label {
-            font-size: 13px;
-            font-weight: 700;
-            color: #1C1C1E;
-            background: white;
-            padding: 6px 14px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            opacity: 0;
-            transform: translateX(-10px);
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        /* Desktop View Adjustments */
         @media (min-width: 768px) {
             :root {
-                --glass-bg: rgba(255, 255, 255, 0.8);
+                --glass-bg: rgba(255, 255, 255, 0.9);
                 --glass-border: rgba(0, 0, 0, 0.1);
                 --home-icon: #007AFF;
             }
-            .btn-home-floating:hover {
-                transform: scale(1.05) translateY(-2px);
-                background: white;
-                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-            }
-            .btn-home-floating:hover + .home-label {
-                opacity: 1;
-                transform: translateX(0);
-            }
-            .btn-home-floating {
-                box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            }
+            .btn-home-floating:hover { transform: scale(1.05) translateY(-2px); background: white; }
         }
 
-        .btn-home-floating:active {
-            transform: scale(0.92);
-        }
-
-        /* UI Elements */
+        /* Layout */
         .hero-pro {
             background: linear-gradient(180deg, #1C1C1E 0%, #2C2C2E 100%);
             padding: 85px 24px 60px;
             border-bottom-left-radius: 45px; border-bottom-right-radius: 45px; 
             color: white; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        body.theme-siaga { background-color: #FFF9F2; }
-        body.theme-bahaya { background-color: #FFF2F2; }
         .hero-siaga { background: linear-gradient(180deg, var(--ios-orange) 0%, #E68600 100%) !important; }
         .hero-bahaya { background: linear-gradient(180deg, var(--ios-red) 0%, #D73128 100%) !important; }
 
-        .badge-system {
-            background: rgba(255,255,255,0.15); color: white; padding: 4px 12px; border-radius: 20px;
-            font-size: 10px; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .instansi-title { font-size: 11px; font-weight: 700; opacity: 0.6; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; }
-        .main-title { font-size: 26px; font-weight: 800; margin: 5px 0 20px; letter-spacing: -0.5px; color: #fff; }
-
-        .time-box-capsule {
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 20px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .container { max-width: 500px; margin: auto; padding: 0 16px; }
+        .container { max-width: 500px; margin: auto; padding: 0 16px; min-height: 100vh; }
+        
         .card { 
             background: var(--ios-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04); position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
         }
         
         .card-label { font-size: 11px; font-weight: 800; color: var(--ios-blue); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
 
         input, select { 
-            width: 100%; height: 52px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: 16px; 
-            background: #F9F9FB; padding: 0 16px; font-size: 15px; margin-bottom: 12px; font-family: inherit;
-            transition: all 0.3s ease;
+            width: 100%; height: 50px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: 14px; 
+            background: #F9F9FB; padding: 0 15px; font-size: 14px; margin-bottom: 12px; font-family: inherit;
         }
         input:focus { border-color: var(--ios-blue); background: white; outline: none; }
-        
+
+        .intake-group {
+            background: rgba(0,122,255,0.03); padding: 15px; border-radius: 18px; 
+            border: 1px solid rgba(0,122,255,0.08); margin-bottom: 15px;
+        }
+        .intake-title { font-size: 10px; font-weight: 800; color: var(--ios-blue); margin-bottom: 10px; display: block; letter-spacing: 0.5px; }
+
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .input-mini-label { font-size: 9px; font-weight: 700; color: #8E8E93; margin-left: 5px; display: block; margin-bottom: 4px; }
+
         .btn-send { 
-            background: var(--ios-green); color: white; border: none; height: 68px; 
-            border-radius: 25px; width: 100%; font-size: 17px; font-weight: 800; 
-            cursor: pointer; box-shadow: 0 12px 30px rgba(52, 199, 89, 0.3); display: flex; align-items: center; justify-content: center; gap: 12px;
-            margin-bottom: 30px; transition: all 0.3s ease;
+            background: var(--ios-green); color: white; border: none; height: 65px; 
+            border-radius: 22px; width: 100%; font-size: 16px; font-weight: 800; 
+            cursor: pointer; box-shadow: 0 10px 25px rgba(52, 199, 89, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 10px;
         }
-        .btn-send:active { transform: scale(0.97); }
 
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121214; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s ease; }
+        footer { text-align: center; padding: 40px 20px; color: #8E8E93; font-size: 12px; }
+        .footer-logo { font-weight: 800; color: #1C1C1E; letter-spacing: 1px; margin-bottom: 5px; display: block; }
+
+        #splash-screen { position: fixed; inset: 0; background: #121214; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.6s ease; }
         #splash-screen.fade-out { opacity: 0; visibility: hidden; }
-
-        .camera-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .camera-box {
-            border: 2px dashed rgba(0,122,255,0.3); border-radius: 20px; padding: 20px 15px; text-align: center;
-            color: var(--ios-blue); font-weight: 700; font-size: 11px; cursor: pointer;
-            background: rgba(0,122,255,0.04); transition: all 0.3s ease;
-        }
-        .camera-box:active { background: rgba(0,122,255,0.1); }
-        .preview-img { width: 100%; border-radius: 12px; margin-top: 10px; display: none; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); object-fit: cover; aspect-ratio: 4/3; }
         
-        .error-toast { 
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); 
-            background: #1C1C1E; color: white; padding: 14px 28px; border-radius: 25px;
-            font-size: 13px; font-weight: 700; z-index: 4000; display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideUp 0.3s ease;
+        .preview-img { width: 100%; border-radius: 12px; margin-top: 10px; display: none; object-fit: cover; aspect-ratio: 4/3; }
+        .camera-box {
+            border: 2px dashed rgba(0,122,255,0.2); border-radius: 16px; padding: 15px; text-align: center;
+            color: var(--ios-blue); font-weight: 700; font-size: 10px; cursor: pointer; background: rgba(0,122,255,0.02);
         }
-        @keyframes slideUp { from { bottom: -50px; opacity: 0; } to { bottom: 40px; opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div id="splash-screen">
-    <i class="fa-solid fa-droplet" style="font-size:55px; color:var(--ios-blue);"></i>
-    <h2 style="color:white; margin-top:20px; letter-spacing:4px; font-weight:800; font-size:16px;">DEBIT PRO V8.1</h2>
+    <i class="fa-solid fa-droplet" style="font-size:50px; color:var(--ios-blue);"></i>
+    <h2 style="color:white; margin-top:20px; letter-spacing:3px; font-weight:800; font-size:14px;">DEBIT PRO V8.6</h2>
 </div>
 
-<!-- Adaptif Home Button Container -->
 <div class="btn-home-container">
-    <a href="home.html" class="btn-home-floating" title="Kembali ke Beranda">
+    <a href="index.html" class="btn-home-floating">
         <i class="fa-solid fa-house"></i>
     </a>
-    <span class="home-label">Beranda</span>
 </div>
-
-<div id="error-toast" class="error-toast">⚠️ Mohon lengkapi semua kolom!</div>
 
 <div class="container">
     <div class="hero-pro" id="hero" style="margin-left:-16px; margin-right:-16px;">
-        <div class="badge-system">OFFICIAL DEPLOYMENT</div>
-        <p class="instansi-title">UPT PSDA BONDOYUDO BARU</p>
-        <h1 class="main-title">Input Laporan Debit</h1>
+        <p style="font-size:10px; font-weight:800; opacity:0.6; letter-spacing:1.5px; margin:0;">UPT PSDA BONDOYUDO BARU</p>
+        <h1 style="font-size:24px; font-weight:800; margin:5px 0 20px;">Laporan Harian Bendung</h1>
         
-        <div class="time-box-capsule">
+        <div style="background:rgba(255,255,255,0.08); padding:15px 20px; border-radius:22px; display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <span id="day-info" style="font-size:9px; font-weight:800; opacity:0.6; display:block; text-transform:uppercase;">...</span>
-                <div id="live-time" style="font-family:'JetBrains Mono'; font-size:22px; font-weight:700;">00:00:00</div>
+                <div id="live-time" style="font-family:'JetBrains Mono'; font-size:20px; font-weight:700;">00:00:00</div>
             </div>
-            <div id="w-icon"><i class="fa-solid fa-cloud-sun" style="color:#FFD60A; font-size:24px;"></i></div>
+            <i class="fa-solid fa-cloud-sun" style="color:#FFD60A; font-size:22px;"></i>
         </div>
     </div>
 
-    <!-- Section 1 -->
-    <div class="card" style="margin-top:-35px;">
+    <!-- Section 1: Administrasi -->
+    <div class="card" style="margin-top:-30px;">
         <span class="card-label"><i class="fa-solid fa-user-shield"></i> 1. Administrasi</span>
         <input type="text" id="petugas" placeholder="Nama Petugas Pelapor">
         <div style="display:flex; gap:10px;">
             <input type="date" id="tgl">
             <input type="time" id="jam">
         </div>
-        <select id="sDI" onchange="hDI()">
+        <select id="sDI">
             <option value="">Pilih Daerah Irigasi...</option>
             <option>DI BARU</option>
             <option>DI POROLINGGO</option>
-            <option value="m">LAINNYA...</option>
         </select>
-        <input type="text" id="mDI" style="display:none;" placeholder="Masukkan Nama DI">
-        
-        <select id="sB" onchange="hB()">
+        <select id="sB">
             <option value="">Pilih Bendung...</option>
             <option>BENDUNG KARANGDORO</option>
             <option>BENDUNG SUMBERMULYO</option>
-            <option value="m">LAINNYA...</option>
+            <option>BENDUNG POROLINGGO</option>
         </select>
-        <input type="text" id="mB" style="display:none;" placeholder="Masukkan Nama Bendung">
     </div>
 
-    <!-- Section 2 -->
+    <!-- Section 2: Data Teknis & Intake -->
     <div class="card">
-        <span class="card-label"><i class="fa-solid fa-chart-line"></i> 2. Data Teknis</span>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <span style="font-size: 11px; font-weight: 800; opacity: 0.5;">TMA & KONDISI</span>
-            <select id="trend" style="width: 120px; height: 38px; margin-bottom: 0; font-size: 13px; background: white;">
+        <span class="card-label"><i class="fa-solid fa-gauge-high"></i> 2. Kondisi & Debit</span>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="text" id="tma" placeholder="TMA (cm)" inputmode="decimal">
+            <select id="trend">
                 <option value="Tetap">📊 Tetap</option>
                 <option value="Naik">📈 Naik</option>
                 <option value="Turun">📉 Turun</option>
             </select>
         </div>
-        <input type="text" id="tma" placeholder="TMA (cm)" inputmode="decimal" oninput="fR(this)">
-        <input type="text" id="mon" placeholder="Debit Monitoring (Cm³/dt)" inputmode="decimal" oninput="fR(this)">
-        
-        <div style="background:#F2F2F7; padding:15px; border-radius:20px; margin-top:10px; border: 1px solid rgba(0,0,0,0.03);">
-            <span style="font-size:10px; font-weight:800; display:block; margin-bottom:10px; color: var(--ios-blue);">INTAKE KIRI</span>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+        <input type="text" id="mon" placeholder="Debit Monitoring (m³/dt)" inputmode="decimal">
+
+        <div class="intake-group">
+            <span class="intake-title">INTAKE KIRI (QK)</span>
+            <div class="grid-3">
                 <div>
-                    <span style="font-size:9px; font-weight:700; margin-left:5px;">L (m)</span>
-                    <input type="text" id="lk" placeholder="0.00" inputmode="decimal" oninput="fR(this)">
+                    <span class="input-mini-label">H (m)</span>
+                    <input type="text" id="hkiri" placeholder="0.00">
                 </div>
                 <div>
-                    <span style="font-size:9px; font-weight:700; margin-left:5px;">Qact</span>
-                    <input type="text" id="qk" placeholder="0.00" inputmode="decimal" oninput="fR(this)">
+                    <span class="input-mini-label">QK-Act</span>
+                    <input type="text" id="qkact" placeholder="0.00">
                 </div>
                 <div>
-                    <span style="font-size:9px; font-weight:700; margin-left:5px;">Qd</span>
-                    <input type="text" id="dk" placeholder="0.00" inputmode="decimal" oninput="fR(this)">
+                    <span class="input-mini-label">QK-Drev</span>
+                    <input type="text" id="qkdrev" placeholder="0.00">
+                </div>
+            </div>
+        </div>
+
+        <div class="intake-group" style="background: rgba(52,199,89,0.03); border-color: rgba(52,199,89,0.08);">
+            <span class="intake-title" style="color:var(--ios-green)">INTAKE KANAN (QR)</span>
+            <div class="grid-3">
+                <div>
+                    <span class="input-mini-label">H (m)</span>
+                    <input type="text" id="hkanan" placeholder="0.00">
+                </div>
+                <div>
+                    <span class="input-mini-label">QR-Act</span>
+                    <input type="text" id="qract" placeholder="0.00">
+                </div>
+                <div>
+                    <span class="input-mini-label">QR-Drev</span>
+                    <input type="text" id="qrdrev" placeholder="0.00">
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Section 3 -->
+    <!-- Section 3: Masa Tanam & Realisasi -->
     <div class="card">
-        <span class="card-label"><i class="fa-solid fa-camera-retro"></i> 3. Dokumentasi</span>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:15px;">
-            <select id="cuaca" style="background:white;">
+        <span class="card-label"><i class="fa-solid fa-seedling"></i> 3. Masa Tanam & Realisasi</span>
+        <select id="mt">
+            <option value="MT 1">Masa Tanam I (Rendengan)</option>
+            <option value="MT 2">Masa Tanam II (Gadu I)</option>
+            <option value="MT 3">Masa Tanam III (Gadu II)</option>
+        </select>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+                <span class="input-mini-label">Luas Baku (Ha)</span>
+                <input type="text" id="baku" placeholder="0.00" inputmode="decimal" oninput="calcP()">
+            </div>
+            <div>
+                <span class="input-mini-label">Luas Real (Ha)</span>
+                <input type="text" id="real" placeholder="0.00" inputmode="decimal" oninput="calcP()">
+            </div>
+        </div>
+        
+        <div style="background:#F2F2F7; padding:15px; border-radius:14px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:12px; font-weight:700; color:#8E8E93;">Persentase Realisasi</span>
+            <span id="persen-display" style="font-family:'JetBrains Mono'; font-size:18px; font-weight:800; color:var(--ios-blue);">0%</span>
+        </div>
+        <input type="hidden" id="persen_val" value="0">
+    </div>
+
+    <!-- Section 4: Dokumentasi -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-camera"></i> 4. Dokumentasi</span>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+            <select id="cuaca">
                 <option>☀️ Cerah</option>
                 <option>☁️ Mendung</option>
                 <option>🌧️ Hujan</option>
             </select>
-            <select id="status" onchange="uS()" style="background:white;">
+            <select id="status" onchange="uS()">
                 <option value="Aman">✅ Aman</option>
                 <option value="Siaga">⚠️ Siaga</option>
                 <option value="Bahaya">🚨 Bahaya</option>
             </select>
         </div>
-        
-        <div class="camera-grid">
-            <label class="camera-box" for="cam-intake">
-                <i class="fa-solid fa-water" style="font-size:18px; margin-bottom:8px;"></i><br>FOTO INTAKE
-                <input type="file" id="cam-intake" accept="image/*" capture="camera" style="display:none;" onchange="processPhoto(this, 'intake')">
-                <img id="preview-intake" class="preview-img">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <label class="camera-box" for="cam-1">
+                <i class="fa-solid fa-water"></i><br>FOTO INTAKE
+                <input type="file" id="cam-1" accept="image/*" capture="camera" style="display:none;" onchange="prev(this, 'p1')">
+                <img id="p1" class="preview-img">
             </label>
-            <label class="camera-box" for="cam-limpasan">
-                <i class="fa-solid fa-droplet" style="font-size:18px; margin-bottom:8px;"></i><br>FOTO LIMPASAN
-                <input type="file" id="cam-limpasan" accept="image/*" capture="camera" style="display:none;" onchange="processPhoto(this, 'limpasan')">
-                <img id="preview-limpasan" class="preview-img">
+            <label class="camera-box" for="cam-2">
+                <i class="fa-solid fa-droplet"></i><br>FOTO LIMPASAN
+                <input type="file" id="cam-2" accept="image/*" capture="camera" style="display:none;" onchange="prev(this, 'p2')">
+                <img id="p2" class="preview-img">
             </label>
         </div>
     </div>
 
-    <button id="main-btn" class="btn-send" onclick="validateAndSend()">
-        <i class="fa-brands fa-whatsapp" style="font-size:22px;"></i> KIRIM LAPORAN
+    <button class="btn-send" onclick="sendWA()">
+        <i class="fa-brands fa-whatsapp"></i> KIRIM LAPORAN
     </button>
+
+    <footer>
+        <span class="footer-logo">BONDYUDO BARU</span>
+        <p>Sistem Informasi Monitoring Debit Digital<br>Versi 8.6.0 Build 2024 • Unit Pelaksana Teknis</p>
+    </footer>
 </div>
 
 <script>
-    function fR(input) {
-        let v = input.value.replace(/[^0-9.]/g, '');
-        if (v && !v.includes('.')) {
-            // Biarkan format titik desimal jika ada
-            // input.value = parseFloat(v).toLocaleString('id-ID'); 
-        }
-    }
-
-    function hDI() { document.getElementById('mDI').style.display = document.getElementById('sDI').value==='m'?'block':'none'; }
-    function hB() { document.getElementById('mB').style.display = document.getElementById('sB').value==='m'?'block':'none'; }
-
+    // Update UI Status (Hero Color)
     function uS() {
         const s = document.getElementById('status').value;
-        const b = document.body;
         const h = document.getElementById('hero');
-        b.className = ''; h.className = 'hero-pro';
-        if(s==='Siaga') { b.classList.add('theme-siaga'); h.classList.add('hero-siaga'); }
-        else if(s==='Bahaya') { b.classList.add('theme-bahaya'); h.classList.add('hero-bahaya'); }
+        h.className = 'hero-pro';
+        if(s==='Siaga') h.classList.add('hero-siaga');
+        if(s==='Bahaya') h.classList.add('hero-bahaya');
     }
 
+    // Calculate Percentage Realisasi
+    function calcP() {
+        const baku = parseFloat(document.getElementById('baku').value) || 0;
+        const real = parseFloat(document.getElementById('real').value) || 0;
+        let p = 0;
+        if(baku > 0) p = (real / baku) * 100;
+        
+        const display = document.getElementById('persen-display');
+        const hidden = document.getElementById('persen_val');
+        
+        display.innerText = p.toFixed(2) + '%';
+        hidden.value = p.toFixed(2);
+        
+        if(p > 100) display.style.color = 'var(--ios-red)';
+        else display.style.color = 'var(--ios-blue)';
+    }
+
+    // Image Preview
+    function prev(input, id) {
+        if (input.files && input.files[0]) {
+            const r = new FileReader();
+            r.onload = e => {
+                const p = document.getElementById(id);
+                p.src = e.target.result;
+                p.style.display = 'block';
+            };
+            r.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Digital Clock
     function clock() {
         const n = new Date();
-        const liveTimeEl = document.getElementById('live-time');
-        if(liveTimeEl) liveTimeEl.innerText = n.toLocaleTimeString('id-ID').replace(/\./g, ':');
-        const dayInfoEl = document.getElementById('day-info');
-        if(dayInfoEl) {
-            const hariArr = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
-            const bulanArr = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
-            dayInfoEl.innerText = `${hariArr[n.getDay()]}, ${n.getDate()} ${bulanArr[n.getMonth()]} ${n.getFullYear()}`;
-        }
+        document.getElementById('live-time').innerText = n.toLocaleTimeString('id-ID').replace(/\./g, ':');
+        const h = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+        const b = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+        document.getElementById('day-info').innerText = `${h[n.getDay()]}, ${n.getDate()} ${b[n.getMonth()]} ${n.getFullYear()}`;
     }
 
     window.onload = () => {
         document.getElementById('tgl').value = new Date().toISOString().split('T')[0];
         document.getElementById('jam').value = new Date().toTimeString().substring(0,5);
         setInterval(clock, 1000);
-        setTimeout(() => {
-            const splash = document.getElementById('splash-screen');
-            if(splash) splash.classList.add('fade-out');
-        }, 1200);
+        setTimeout(() => document.getElementById('splash-screen').classList.add('fade-out'), 1200);
     };
 
-    function validateAndSend() {
-        const p = document.getElementById('petugas').value;
-        const tma = document.getElementById('tma').value;
-        if(!p || !tma) {
-            const toast = document.getElementById('error-toast');
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
-            return;
+    function sendWA() {
+        const pet = document.getElementById('petugas').value;
+        const di = document.getElementById('sDI').value;
+        const bnd = document.getElementById('sB').value;
+        
+        if(!pet || !di || !bnd) {
+            return alert("Harap lengkapi data Administrasi (Nama, DI, dan Bendung)!");
         }
-        // Logic kirim WA...
-        alert("Laporan tervalidasi. Membuka WhatsApp...");
-    }
-    
-    function processPhoto(input, type) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById('preview-' + type);
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+
+        const msg = `*LAPORAN HARIAN BENDUNG*%0A` +
+                    `---------------------------------%0A` +
+                    `Petugas: ${pet}%0A` +
+                    `Tanggal: ${document.getElementById('tgl').value}%0A` +
+                    `Jam: ${document.getElementById('jam').value}%0A` +
+                    `DI: ${di}%0A` +
+                    `Bendung: ${bnd}%0A%0A` +
+                    `*KONDISI DEBIT*%0A` +
+                    `TMA: ${document.getElementById('tma').value} cm%0A` +
+                    `Trend: ${document.getElementById('trend').value}%0A` +
+                    `Debit Mon: ${document.getElementById('mon').value} m3/dt%0A%0A` +
+                    `*INTAKE KIRI*%0A` +
+                    `H: ${document.getElementById('hkiri').value} m%0A` +
+                    `QK-Act: ${document.getElementById('qkact').value} m3/dt%0A%0A` +
+                    `*INTAKE KANAN*%0A` +
+                    `H: ${document.getElementById('hkanan').value} m%0A` +
+                    `QR-Act: ${document.getElementById('qract').value} m3/dt%0A%0A` +
+                    `*REALISASI TANAM*%0A` +
+                    `Masa: ${document.getElementById('mt').value}%0A` +
+                    `Baku: ${document.getElementById('baku').value} Ha%0A` +
+                    `Real: ${document.getElementById('real').value} Ha%0A` +
+                    `Persen: ${document.getElementById('persen_val').value}%%0A%0A` +
+                    `Status: ${document.getElementById('status').value}%0A` +
+                    `Cuaca: ${document.getElementById('cuaca').value}`;
+
+        window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 </script>
+
 </body>
 </html>
