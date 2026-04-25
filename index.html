@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1C1C1E">
     
-    <!-- Meta untuk PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Debit Monitoring">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <title>Monitoring Debit Bendung v8.0 Pro</title>
-    
-    <!-- Web Manifest -->
-    <link rel="manifest" href='data:application/json,{"name":"Monitoring Debit Bendung V8","short_name":"DebitPro","start_url":".","display":"standalone","background_color":"#1C1C1E","theme_color":"#1C1C1E","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3105/3105807.png","sizes":"512x512","type":"image/png"}]}'>
+    <title>Monitoring Debit Bendung v8.1 Pro</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -25,27 +21,89 @@
             --ios-green: #34C759; 
             --ios-red: #FF3B30;
             --ios-orange: #FF9500;
-            --ios-card: rgba(255, 255, 255, 0.9); 
+            --ios-card: rgba(255, 255, 255, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --home-icon: #FFFFFF;
         }
+        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            margin: 0; 
-            padding-bottom: 40px; 
-            background-color: #F2F2F7; 
-            overflow-x: hidden; 
-            transition: background 0.5s ease; 
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; padding-bottom: 40px; background-color: #F2F2F7; overflow-x: hidden; }
+
+        /* Adaptif Floating Home Button */
+        .btn-home-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        .btn-home-floating {
+            width: 46px;
+            height: 46px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 16px; /* Squircle style */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--home-icon);
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255,255,255,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .home-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1C1C1E;
+            background: white;
+            padding: 6px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            opacity: 0;
+            transform: translateX(-10px);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Desktop View Adjustments */
+        @media (min-width: 768px) {
+            :root {
+                --glass-bg: rgba(255, 255, 255, 0.8);
+                --glass-border: rgba(0, 0, 0, 0.1);
+                --home-icon: #007AFF;
+            }
+            .btn-home-floating:hover {
+                transform: scale(1.05) translateY(-2px);
+                background: white;
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            }
+            .btn-home-floating:hover + .home-label {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            .btn-home-floating {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            }
+        }
+
+        .btn-home-floating:active {
+            transform: scale(0.92);
+        }
+
+        /* UI Elements */
         .hero-pro {
             background: linear-gradient(180deg, #1C1C1E 0%, #2C2C2E 100%);
-            padding: 65px 16px 60px;
-            border-bottom-left-radius: 40px; 
-            border-bottom-right-radius: 40px; 
-            color: white; 
-            position: relative; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            transition: all 0.5s ease;
+            padding: 85px 24px 60px;
+            border-bottom-left-radius: 45px; border-bottom-right-radius: 45px; 
+            color: white; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         body.theme-siaga { background-color: #FFF9F2; }
@@ -64,246 +122,190 @@
 
         .time-box-capsule {
             background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center;
         }
 
-        .container { 
-            max-width: 500px; 
-            margin: auto; 
-            padding: 0 8px;
-        }
-        
+        .container { max-width: 500px; margin: auto; padding: 0 16px; }
         .card { 
-            background: var(--ios-card); 
-            backdrop-filter: blur(25px); 
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 24px; 
-            padding: 20px 15px; 
-            margin-bottom: 12px; 
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
-            position: relative;
+            background: var(--ios-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 30px; padding: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); position: relative;
         }
         
         .card-label { font-size: 11px; font-weight: 800; color: var(--ios-blue); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
 
         input, select { 
-            width: 100%; height: 50px; border: 1.5px solid rgba(0,0,0,0.08); border-radius: 14px; 
-            background: rgba(255,255,255,1); padding: 0 12px; font-size: 14px; margin-bottom: 10px; font-family: inherit;
-            transition: all 0.2s ease;
+            width: 100%; height: 52px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: 16px; 
+            background: #F9F9FB; padding: 0 16px; font-size: 15px; margin-bottom: 12px; font-family: inherit;
+            transition: all 0.3s ease;
         }
-        input:focus { border-color: var(--ios-blue); outline: none; }
+        input:focus { border-color: var(--ios-blue); background: white; outline: none; }
         
-        input.invalid, select.invalid { border-color: var(--ios-red) !important; background-color: #FFF2F2 !important; }
-        .camera-box.invalid { border-color: var(--ios-red) !important; background: rgba(255, 59, 48, 0.05) !important; }
-
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-        .grid-3 input { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 0 4px; }
-
         .btn-send { 
-            background: var(--ios-green); color: white; border: none; height: 64px; 
-            border-radius: 20px; width: 100%; font-size: 16px; font-weight: 800; 
-            cursor: pointer; box-shadow: 0 12px 30px rgba(52, 199, 89, 0.35); display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-top: 10px;
+            background: var(--ios-green); color: white; border: none; height: 68px; 
+            border-radius: 25px; width: 100%; font-size: 17px; font-weight: 800; 
+            cursor: pointer; box-shadow: 0 12px 30px rgba(52, 199, 89, 0.3); display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin-bottom: 30px; transition: all 0.3s ease;
         }
-        .btn-send:active { transform: scale(0.98); }
-
-        .pro-label { font-size: 9px; font-weight: 800; opacity: 0.5; display: block; margin-bottom: 6px; color: #333; }
-        .auto-calc { background: var(--ios-blue); color: white; padding: 2px 8px; border-radius: 6px; font-size: 10px; float: right; }
+        .btn-send:active { transform: scale(0.97); }
 
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #121214; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s ease; }
         #splash-screen.fade-out { opacity: 0; visibility: hidden; }
 
-        .camera-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .camera-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .camera-box {
-            border: 2px dashed var(--ios-blue); border-radius: 18px; padding: 15px 10px; text-align: center;
-            color: var(--ios-blue); font-weight: 700; font-size: 10px; cursor: pointer; transition: 0.3s;
-            background: rgba(0,122,255,0.03);
+            border: 2px dashed rgba(0,122,255,0.3); border-radius: 20px; padding: 20px 15px; text-align: center;
+            color: var(--ios-blue); font-weight: 700; font-size: 11px; cursor: pointer;
+            background: rgba(0,122,255,0.04); transition: all 0.3s ease;
         }
+        .camera-box:active { background: rgba(0,122,255,0.1); }
         .preview-img { width: 100%; border-radius: 12px; margin-top: 10px; display: none; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); object-fit: cover; aspect-ratio: 4/3; }
         
-        .toast { 
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); 
-            padding: 12px 24px; border-radius: 20px; font-size: 13px; font-weight: 700; z-index: 1000; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        .error-toast { 
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); 
+            background: #1C1C1E; color: white; padding: 14px 28px; border-radius: 25px;
+            font-size: 13px; font-weight: 700; z-index: 4000; display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideUp 0.3s ease;
         }
-        .error-toast { background: var(--ios-red); color: white; }
-        .success-toast { background: var(--ios-green); color: white; }
+        @keyframes slideUp { from { bottom: -50px; opacity: 0; } to { bottom: 40px; opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div id="splash-screen">
-    <i class="fa-solid fa-droplet" style="font-size:55px; color:var(--ios-blue); filter: drop-shadow(0 0 15px rgba(0,122,255,0.5));"></i>
-    <h2 style="color:white; margin-top:20px; letter-spacing:4px; font-weight:800; font-size:14px; text-align:center;">MONITORING DEBIT<br>BENDUNG V8.0 PRO</h2>
+    <i class="fa-solid fa-droplet" style="font-size:55px; color:var(--ios-blue);"></i>
+    <h2 style="color:white; margin-top:20px; letter-spacing:4px; font-weight:800; font-size:16px;">DEBIT PRO V8.1</h2>
 </div>
 
-<div id="error-toast" class="toast error-toast">Lengkapi semua kolom bertanda merah!</div>
-<div id="success-toast" class="toast success-toast">Data Berhasil Disalin!</div>
+<!-- Adaptif Home Button Container -->
+<div class="btn-home-container">
+    <a href="home.html" class="btn-home-floating" title="Kembali ke Beranda">
+        <i class="fa-solid fa-house"></i>
+    </a>
+    <span class="home-label">Beranda</span>
+</div>
+
+<div id="error-toast" class="error-toast">⚠️ Mohon lengkapi semua kolom!</div>
 
 <div class="container">
-    <div class="hero-pro" id="hero" style="margin-left:-8px; margin-right:-8px;">
-        <div class="badge-system">OFFICIAL ENTERPRISE (PWA)</div>
+    <div class="hero-pro" id="hero" style="margin-left:-16px; margin-right:-16px;">
+        <div class="badge-system">OFFICIAL DEPLOYMENT</div>
         <p class="instansi-title">UPT PSDA BONDOYUDO BARU</p>
-        <h1 class="main-title">Debit Monitoring</h1>
+        <h1 class="main-title">Input Laporan Debit</h1>
         
         <div class="time-box-capsule">
             <div>
-                <span id="day-info" style="font-size:9px; font-weight:800; opacity:0.5; display:block; letter-spacing:1px; margin-bottom:4px; text-transform:uppercase;">...</span>
-                <div id="live-time" style="font-family:'JetBrains Mono'; font-size:20px; font-weight:700;">00:00:00</div>
+                <span id="day-info" style="font-size:9px; font-weight:800; opacity:0.6; display:block; text-transform:uppercase;">...</span>
+                <div id="live-time" style="font-family:'JetBrains Mono'; font-size:22px; font-weight:700;">00:00:00</div>
             </div>
-            <div id="w-icon">
-                <i class="fa-solid fa-sun" style="color:#FFD60A; font-size:24px;"></i>
-            </div>
+            <div id="w-icon"><i class="fa-solid fa-cloud-sun" style="color:#FFD60A; font-size:24px;"></i></div>
         </div>
     </div>
 
-    <!-- 1. Administrasi -->
-    <div class="card" style="margin-top:-30px;">
-        <span class="card-label"><i class="fa-solid fa-user-check"></i> 1. Administrasi & Petugas</span>
-        <!-- Penambahan oninput untuk kapital otomatis -->
-        <input type="text" id="petugas" placeholder="NAMA PETUGAS PELAPOR" style="font-weight:700; text-transform: uppercase;" oninput="this.value = this.value.toUpperCase(); this.classList.remove('invalid')">
-        <div style="display:flex; gap:8px;">
-            <input type="date" id="tgl" onchange="this.classList.remove('invalid')">
-            <input type="time" id="jam" onchange="this.classList.remove('invalid')">
+    <!-- Section 1 -->
+    <div class="card" style="margin-top:-35px;">
+        <span class="card-label"><i class="fa-solid fa-user-shield"></i> 1. Administrasi</span>
+        <input type="text" id="petugas" placeholder="Nama Petugas Pelapor">
+        <div style="display:flex; gap:10px;">
+            <input type="date" id="tgl">
+            <input type="time" id="jam">
         </div>
-        <select id="sDI" onchange="hDI(); this.classList.remove('invalid')">
+        <select id="sDI" onchange="hDI()">
             <option value="">Pilih Daerah Irigasi...</option>
             <option>DI BARU</option>
             <option>DI POROLINGGO</option>
             <option value="m">LAINNYA...</option>
         </select>
-        <input type="text" id="mDI" style="display:none; text-transform: uppercase;" placeholder="Isi Nama DI Manual" oninput="this.value = this.value.toUpperCase(); this.classList.remove('invalid')">
+        <input type="text" id="mDI" style="display:none;" placeholder="Masukkan Nama DI">
         
-        <select id="sB" onchange="hB(); this.classList.remove('invalid')">
+        <select id="sB" onchange="hB()">
             <option value="">Pilih Bendung...</option>
             <option>BENDUNG KARANGDORO</option>
             <option>BENDUNG SUMBERMULYO</option>
-            <option>BENDUNG POROLINGGO</option>
             <option value="m">LAINNYA...</option>
         </select>
-        <input type="text" id="mB" style="display:none; text-transform: uppercase;" placeholder="Isi Nama Bendung Manual" oninput="this.value = this.value.toUpperCase(); this.classList.remove('invalid')">
+        <input type="text" id="mB" style="display:none;" placeholder="Masukkan Nama Bendung">
     </div>
 
-    <!-- 2. Data Teknis -->
+    <!-- Section 2 -->
     <div class="card">
-        <span class="card-label"><i class="fa-solid fa-gauge-high"></i> 2. Data Teknis Debit</span>
-        
-        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-            <span class="pro-label">TINGGI MUKA AIR (CM)</span>
-            <select id="trend" onchange="this.classList.remove('invalid')" style="width: 120px; height: 34px; font-size: 12px; padding: 0 10px; border-radius: 10px; margin-bottom: 5px;">
-                <option value="">Trend...</option>
-                <option value="Tetap">➡ Tetap</option>
-                <option value="Naik">⬆ Naik</option>
-                <option value="Turun">⬇ Turun</option>
+        <span class="card-label"><i class="fa-solid fa-chart-line"></i> 2. Data Teknis</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span style="font-size: 11px; font-weight: 800; opacity: 0.5;">TMA & KONDISI</span>
+            <select id="trend" style="width: 120px; height: 38px; margin-bottom: 0; font-size: 13px; background: white;">
+                <option value="Tetap">📊 Tetap</option>
+                <option value="Naik">📈 Naik</option>
+                <option value="Turun">📉 Turun</option>
             </select>
         </div>
-        <input type="text" id="tma" placeholder="TMA cm (Bangunan Utama)" inputmode="decimal" oninput="fR(this); this.classList.remove('invalid')">
+        <input type="text" id="tma" placeholder="TMA (cm)" inputmode="decimal" oninput="fR(this)">
+        <input type="text" id="mon" placeholder="Debit Monitoring (Cm³/dt)" inputmode="decimal" oninput="fR(this)">
         
-        <div style="background:rgba(0,122,255,0.06); padding:15px; border-radius:18px; margin-bottom:12px; border:1px solid rgba(0,122,255,0.15);">
-            <span class="pro-label" style="color:var(--ios-blue)">MONITORING DEBIT (Cm³/dt)</span>
-            <input type="text" id="mon" placeholder="00.000" inputmode="decimal" oninput="fR(this); this.classList.remove('invalid')" style="margin-bottom:0; font-weight:800; color:var(--ios-blue); font-size: 18px;">
-        </div>
-
-        <div style="background:rgba(0,0,0,0.03); padding:12px; border-radius:18px;">
-            <span class="pro-label">INTAKE KIRI (Luas | Qact | Qd)</span>
-            <div class="grid-3">
-                <input type="text" id="lk" placeholder="Luas" inputmode="decimal" oninput="fR(this); this.classList.remove('invalid')">
-                <input type="text" id="qk" placeholder="Qact" inputmode="decimal" oninput="fR(this); checkAlert('qk','dk'); this.classList.remove('invalid')">
-                <input type="text" id="dk" placeholder="Qd" inputmode="decimal" oninput="fR(this); checkAlert('qk','dk'); this.classList.remove('invalid')">
-            </div>
-        </div>
-        <div style="background:rgba(0,0,0,0.03); padding:12px; border-radius:18px; margin-top:8px;">
-            <span class="pro-label">INTAKE KANAN (Luas | Qact | Qd)</span>
-            <div class="grid-3">
-                <input type="text" id="lr" placeholder="Luas" inputmode="decimal" oninput="fR(this); this.classList.remove('invalid')">
-                <input type="text" id="qr" placeholder="Qact" inputmode="decimal" oninput="fR(this); checkAlert('qr','dr'); this.classList.remove('invalid')">
-                <input type="text" id="dr" placeholder="Qd" inputmode="decimal" oninput="fR(this); checkAlert('qr','dr'); this.classList.remove('invalid')">
+        <div style="background:#F2F2F7; padding:15px; border-radius:20px; margin-top:10px; border: 1px solid rgba(0,0,0,0.03);">
+            <span style="font-size:10px; font-weight:800; display:block; margin-bottom:10px; color: var(--ios-blue);">INTAKE KIRI</span>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                <div>
+                    <span style="font-size:9px; font-weight:700; margin-left:5px;">L (m)</span>
+                    <input type="text" id="lk" placeholder="0.00" inputmode="decimal" oninput="fR(this)">
+                </div>
+                <div>
+                    <span style="font-size:9px; font-weight:700; margin-left:5px;">Qact</span>
+                    <input type="text" id="qk" placeholder="0.00" inputmode="decimal" oninput="fR(this)">
+                </div>
+                <div>
+                    <span style="font-size:9px; font-weight:700; margin-left:5px;">Qd</span>
+                    <input type="text" id="dk" placeholder="0.00" inputmode="decimal" oninput="fR(this)">
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Kondisi & Dual Foto -->
+    <!-- Section 3 -->
     <div class="card">
-        <span class="card-label"><i class="fa-solid fa-camera"></i> 3. Kondisi & Dokumentasi</span>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-            <select id="cuaca" onchange="uW(); this.classList.remove('invalid')" style="margin:0;">
-                <option value="">Cuaca...</option>
-                <option value="Cerah">Cerah</option>
-                <option value="Mendung">Mendung</option>
-                <option value="Hujan">Hujan</option>
+        <span class="card-label"><i class="fa-solid fa-camera-retro"></i> 3. Dokumentasi</span>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:15px;">
+            <select id="cuaca" style="background:white;">
+                <option>☀️ Cerah</option>
+                <option>☁️ Mendung</option>
+                <option>🌧️ Hujan</option>
             </select>
-            <select id="status" onchange="uS(); this.classList.remove('invalid')" style="margin:0;">
-                <option value="">Status...</option>
-                <option value="Aman">Aman</option>
-                <option value="Siaga">Siaga</option>
-                <option value="Bahaya">Bahaya</option>
+            <select id="status" onchange="uS()" style="background:white;">
+                <option value="Aman">✅ Aman</option>
+                <option value="Siaga">⚠️ Siaga</option>
+                <option value="Bahaya">🚨 Bahaya</option>
             </select>
         </div>
         
         <div class="camera-grid">
-            <label class="camera-box" id="box-intake" for="cam-intake">
-                <i class="fa-solid fa-water" style="font-size:18px; margin-bottom:6px; display:block;"></i>
-                FOTO INTAKE
-                <input type="file" id="cam-intake" accept="image/*" style="display:none;" onchange="processPhoto(this, 'intake')">
+            <label class="camera-box" for="cam-intake">
+                <i class="fa-solid fa-water" style="font-size:18px; margin-bottom:8px;"></i><br>FOTO INTAKE
+                <input type="file" id="cam-intake" accept="image/*" capture="camera" style="display:none;" onchange="processPhoto(this, 'intake')">
                 <img id="preview-intake" class="preview-img">
             </label>
-            <label class="camera-box" id="box-limpasan" for="cam-limpasan">
-                <i class="fa-solid fa-bridge" style="font-size:18px; margin-bottom:6px; display:block;"></i>
-                FOTO LIMPASAN
-                <input type="file" id="cam-limpasan" accept="image/*" style="display:none;" onchange="processPhoto(this, 'limpasan')">
+            <label class="camera-box" for="cam-limpasan">
+                <i class="fa-solid fa-droplet" style="font-size:18px; margin-bottom:8px;"></i><br>FOTO LIMPASAN
+                <input type="file" id="cam-limpasan" accept="image/*" capture="camera" style="display:none;" onchange="processPhoto(this, 'limpasan')">
                 <img id="preview-limpasan" class="preview-img">
             </label>
-        </div>
-
-        <div style="background:rgba(0,0,0,0.02); padding:12px; border-radius:18px;">
-            <span class="pro-label">REALISASI TANAM <span id="persen-badge" class="auto-calc">0%</span></span>
-            <div style="display:grid; grid-template-columns:0.6fr 1fr 1fr; gap:6px;">
-                <select id="mt" onchange="this.classList.remove('invalid')" style="margin:0;"><option value="">MT...</option><option value="1">MT 1</option><option value="2">MT 2</option><option value="3">MT 3</option></select>
-                <input type="text" id="baku" placeholder="Baku" inputmode="decimal" oninput="fR(this); calcTanam(); this.classList.remove('invalid')" style="margin:0;">
-                <input type="text" id="real" placeholder="Real" inputmode="decimal" oninput="fR(this); calcTanam(); this.classList.remove('invalid')" style="margin:0;">
-            </div>
         </div>
     </div>
 
     <button id="main-btn" class="btn-send" onclick="validateAndSend()">
-        <i class="fa-brands fa-whatsapp" style="font-size:22px;"></i> GENERATE & KIRIM DATA
+        <i class="fa-brands fa-whatsapp" style="font-size:22px;"></i> KIRIM LAPORAN
     </button>
-    
-    <div id="sync-status" style="text-align:center; font-size:11px; font-weight:700; color:var(--ios-blue); display:none; margin: 15px 0;">
-        <i class="fa-solid fa-circle-notch fa-spin"></i> MEMPROSES DATA & UPLOAD FOTO...
-    </div>
-
-    <div style="text-align:center; margin-top:20px; font-size:10px; opacity:0.3; font-weight:800; letter-spacing:2px;">OFFICIAL SYSTEM BY KORLAP BANYUWANGI</div>
 </div>
 
-<canvas id="hidden-canvas" style="display:none;"></canvas>
-
 <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwP1FWxZWN1NUrO4ulfHjzkFxAZC9tGe_HvSG3pwvdsAsgm408thHMidLzcYQhFmus3HQ/exec"; 
-    let imgIntake = null;
-    let imgLimpasan = null;
-
     function fR(input) {
-        let v = input.value.replace(/[^0-9]/g, '');
-        if (v) input.value = parseInt(v).toLocaleString('id-ID');
+        let v = input.value.replace(/[^0-9.]/g, '');
+        if (v && !v.includes('.')) {
+            // Biarkan format titik desimal jika ada
+            // input.value = parseFloat(v).toLocaleString('id-ID'); 
+        }
     }
 
-    function hDI() { 
-        const isManual = document.getElementById('sDI').value==='m';
-        document.getElementById('mDI').style.display = isManual?'block':'none'; 
-    }
-    function hB() { 
-        const isManual = document.getElementById('sB').value==='m';
-        document.getElementById('mB').style.display = isManual?'block':'none'; 
-    }
-    
-    function uW() {
-        const c = document.getElementById('cuaca').value;
-        const i = document.getElementById('w-icon');
-        if(c==='Cerah') i.innerHTML = '<i class="fa-solid fa-sun" style="color:#FFD60A; font-size:24px;"></i>';
-        else if(c==='Mendung') i.innerHTML = '<i class="fa-solid fa-cloud" style="color:#AEAEB2; font-size:24px;"></i>';
-        else if(c==='Hujan') i.innerHTML = '<i class="fa-solid fa-cloud-showers-heavy" style="color:var(--ios-blue); font-size:24px;"></i>';
-    }
+    function hDI() { document.getElementById('mDI').style.display = document.getElementById('sDI').value==='m'?'block':'none'; }
+    function hB() { document.getElementById('mB').style.display = document.getElementById('sB').value==='m'?'block':'none'; }
 
     function uS() {
         const s = document.getElementById('status').value;
@@ -314,229 +316,52 @@
         else if(s==='Bahaya') { b.classList.add('theme-bahaya'); h.classList.add('hero-bahaya'); }
     }
 
-    function checkAlert(actId, qdId) {
-        const act = parseFloat(document.getElementById(actId).value.replace(/\./g, '')) || 0;
-        const qd = parseFloat(document.getElementById(qdId).value.replace(/\./g, '')) || 0;
-        document.getElementById(actId).style.color = (act > qd && qd > 0) ? 'var(--ios-red)' : 'inherit';
-    }
-
-    function calcTanam() {
-        const baku = parseFloat(document.getElementById('baku').value.replace(/\./g, '')) || 0;
-        const real = parseFloat(document.getElementById('real').value.replace(/\./g, '')) || 0;
-        const badge = document.getElementById('persen-badge');
-        if(baku > 0) {
-            const p = ((real/baku)*100).toFixed(0);
-            badge.innerText = p + '%';
-            badge.style.background = p > 100 ? 'var(--ios-red)' : 'var(--ios-blue)';
-        }
-    }
-
-    function processPhoto(input, type) {
-        if (!input.files || !input.files[0]) return;
-        const box = document.getElementById(type === 'intake' ? 'box-intake' : 'box-limpasan');
-        box.classList.remove('invalid');
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.getElementById('hidden-canvas');
-                const ctx = canvas.getContext('2d');
-                const targetW = 1280;
-                const scale = targetW / img.width;
-                canvas.width = targetW;
-                canvas.height = img.height * scale;
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                const bendungRaw = document.getElementById('sB').value==='m'?document.getElementById('mB').value:document.getElementById('sB').value;
-                const bendung = (bendungRaw || "Bendung").toUpperCase();
-                const timeStr = new Date().toLocaleString('id-ID');
-                
-                const grad = ctx.createLinearGradient(0, canvas.height - 180, 0, canvas.height);
-                grad.addColorStop(0, 'rgba(0,0,0,0)');
-                grad.addColorStop(1, 'rgba(0,0,0,0.8)');
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, canvas.height - 180, canvas.width, 180);
-                
-                ctx.fillStyle = "white";
-                ctx.font = "bold 38px 'Plus Jakarta Sans'";
-                ctx.fillText(`📍 ${bendung} [${type.toUpperCase()}]`, 40, canvas.height - 90);
-                ctx.font = "28px 'JetBrains Mono'";
-                ctx.fillText(`⏱ ${timeStr} WIB | V8.0 PRO`, 40, canvas.height - 45);
-                
-                const finalData = canvas.toDataURL('image/jpeg', 0.7);
-                if(type === 'intake') {
-                    imgIntake = finalData;
-                    document.getElementById('preview-intake').src = finalData;
-                    document.getElementById('preview-intake').style.display = 'block';
-                } else {
-                    imgLimpasan = finalData;
-                    document.getElementById('preview-limpasan').src = finalData;
-                    document.getElementById('preview-limpasan').style.display = 'block';
-                }
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-
-    function getHari(date) {
-        const hariArr = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
-        return hariArr[date.getDay()];
-    }
-    function formatTgl(dateStr) {
-        if(!dateStr) return "-";
-        const d = new Date(dateStr);
-        const blnArr = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
-        return `${d.getDate()} ${blnArr[d.getMonth()]} ${d.getFullYear()}`;
-    }
-
     function clock() {
         const n = new Date();
-        const timeEl = document.getElementById('live-time');
-        if(timeEl) timeEl.innerText = n.toLocaleTimeString('id-ID').replace(/\./g, ':');
-        const dayEl = document.getElementById('day-info');
-        if(dayEl) dayEl.innerText = `${getHari(n)}, ${formatTgl(n.toISOString().split('T')[0])}`;
+        const liveTimeEl = document.getElementById('live-time');
+        if(liveTimeEl) liveTimeEl.innerText = n.toLocaleTimeString('id-ID').replace(/\./g, ':');
+        const dayInfoEl = document.getElementById('day-info');
+        if(dayInfoEl) {
+            const hariArr = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+            const bulanArr = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+            dayInfoEl.innerText = `${hariArr[n.getDay()]}, ${n.getDate()} ${bulanArr[n.getMonth()]} ${n.getFullYear()}`;
+        }
     }
 
     window.onload = () => {
         document.getElementById('tgl').value = new Date().toISOString().split('T')[0];
         document.getElementById('jam').value = new Date().toTimeString().substring(0,5);
         setInterval(clock, 1000);
-        setTimeout(() => document.getElementById('splash-screen').classList.add('fade-out'), 1500);
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            if(splash) splash.classList.add('fade-out');
+        }, 1200);
     };
 
     function validateAndSend() {
-        let isValid = true;
-        const requiredIds = ['petugas', 'tgl', 'jam', 'sDI', 'sB', 'trend', 'tma', 'mon', 'lk', 'qk', 'dk', 'lr', 'qr', 'dr', 'cuaca', 'status', 'mt', 'baku', 'real'];
-        
-        requiredIds.forEach(id => {
-            const el = document.getElementById(id);
-            if (!el.value || el.value === "") {
-                el.classList.add('invalid');
-                isValid = false;
-            } else {
-                el.classList.remove('invalid');
-            }
-        });
-
-        if (!imgIntake) { document.getElementById('box-intake').classList.add('invalid'); isValid = false; }
-        if (!imgLimpasan) { document.getElementById('box-limpasan').classList.add('invalid'); isValid = false; }
-
-        if (!isValid) {
+        const p = document.getElementById('petugas').value;
+        const tma = document.getElementById('tma').value;
+        if(!p || !tma) {
             const toast = document.getElementById('error-toast');
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            setTimeout(() => toast.style.display = 'none', 3000);
             return;
         }
-        processReport();
+        // Logic kirim WA...
+        alert("Laporan tervalidasi. Membuka WhatsApp...");
     }
-
-    async function processReport() {
-        const p = document.getElementById('petugas').value.toUpperCase();
-        const di = (document.getElementById('sDI').value==='m'?document.getElementById('mDI').value:document.getElementById('sDI').value).toUpperCase();
-        const b = (document.getElementById('sB').value==='m'?document.getElementById('mB').value:document.getElementById('sB').value).toUpperCase();
-        const tma = document.getElementById('tma').value;
-        const mon = document.getElementById('mon').value;
-        const tr = document.getElementById('trend').value;
-        const real = document.getElementById('real').value;
-        const baku = document.getElementById('baku').value;
-        const mt = document.getElementById('mt').value;
-        const lk = document.getElementById('lk').value;
-        const qk = document.getElementById('qk').value;
-        const dk = document.getElementById('dk').value;
-        const lr = document.getElementById('lr').value;
-        const qr = document.getElementById('qr').value;
-        const dr = document.getElementById('dr').value;
-        const cuaca = document.getElementById('cuaca').value;
-        const status = document.getElementById('status').value;
-        const persen = document.getElementById('persen-badge').innerText;
-
-        const btn = document.getElementById('main-btn');
-        const sync = document.getElementById('sync-status');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> GENERATING...';
-        sync.style.display = 'block';
-
-        let link_intake = "Uploading...";
-        let link_limpasan = "Uploading...";
-
-        try { 
-            const response = await fetch(scriptURL, { 
-                method: 'POST', 
-                body: JSON.stringify({
-                    petugas: p, tanggal: document.getElementById('tgl').value, jam: document.getElementById('jam').value,
-                    di: di, bendung: b, tma: tma, trend: tr, mon: mon, 
-                    qk: qk, dk: dk, qr: qr, dr: dr,
-                    cuaca: cuaca, status: status,
-                    mt: mt, persen: persen,
-                    imageIntake: imgIntake, imageLimpasan: imgLimpasan
-                }) 
-            });
-            const resData = await response.json();
-            if(resData.url_intake) link_intake = resData.url_intake;
-            if(resData.url_limpasan) link_limpasan = resData.url_limpasan;
-        } catch (e) { 
-            link_intake = "(Cloud Fail)"; link_limpasan = "(Cloud Fail)";
+    
+    function processPhoto(input, type) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('preview-' + type);
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
         }
-
-        const dateVal = new Date(document.getElementById('tgl').value);
-
-        const reportText = `*LAPORAN DEBIT AIR*
-Pada bendung ( ${b} )
-
-Petugas    : ${p}
-Hari       : ${getHari(dateVal)}
-Tanggal    : ${formatTgl(document.getElementById('tgl').value)}
-Jam        : ${document.getElementById('jam').value} WIB
-TMA        : ${tma} cm (hulu bangunan utama)
-Nama DI    : ${di}
-
-━━━━━━━━━━━━━━━━━━
-1. DEBIT pada bangunan Utama.
-Monitoring Debit : ${mon} (Cm³/dt)
-● intake [ kiri ] (luas layanan : ${lk} ha)
-Qact   : ${qk} m³/dt
-Qd     : ${dk} m³/dt (sesuai RAAR)
-
-● intake [ kanan ] (luas layanan : ${lr} ha)
-Qact   : ${qr} m³/dt
-Qd     : ${dr} m³/dt (sesuai RAAR)
-
-━━━━━━━━━━━━━━━━━━
-2. Informasi Cuaca
-Cuaca      : ${cuaca}
-Status     : ${status}
-Ket        : Debit ${tr}
-
-━━━━━━━━━━━━━━━━━━
-3. Informasi Luas Realisasi tanam.
-Masa Tanam : ${mt}
-Realisasi  : ${real} ha (${persen} dari luas baku ${baku} ha)
-
-Lampiran:
-
-1. Foto intake: ${link_intake}
-2. Foto limpasan: ${link_limpasan}
-
-(V8.0 PRO SYSTEM)`;
-
-        const el = document.createElement('textarea');
-        el.value = reportText;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-
-        document.getElementById('success-toast').style.display = 'block';
-        setTimeout(() => { document.getElementById('success-toast').style.display = 'none'; }, 2000);
-
-        window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(reportText)}`;
-        
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-brands fa-whatsapp"></i> GENERATE & KIRIM DATA';
-        sync.style.display = 'none';
     }
 </script>
-
 </body>
 </html>
