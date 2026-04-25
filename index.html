@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1C1C1E">
-    
-    <title>Monitoring Debit Bendung v8.9 Pro</title>
+    <title>Monitoring Debit Bendung v9.0 Pro</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -25,7 +24,6 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background-color: #F2F2F7; color: #1C1C1E; overflow-x: hidden; }
 
-        /* Floating Home Button */
         .btn-home-container { position: fixed; top: 20px; left: 20px; z-index: 3000; }
         .btn-home-floating {
             width: 46px; height: 46px; background: var(--ios-green); border: 2px solid white;
@@ -33,7 +31,6 @@
             color: white; text-decoration: none; box-shadow: 0 4px 15px rgba(52, 199, 89, 0.4);
         }
 
-        /* Layout */
         .hero-pro {
             background: linear-gradient(180deg, #1C1C1E 0%, #2C2C2E 100%);
             padding: 90px 24px 80px; border-bottom-left-radius: 45px; border-bottom-right-radius: 45px; 
@@ -54,6 +51,8 @@
         .card-overlap { margin-top: -50px; }
         .card-label { font-size: 11px; font-weight: 800; color: var(--ios-blue); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
 
+        .group-title { font-size: 12px; font-weight: 700; color: #8E8E93; margin: 15px 0 8px 5px; text-transform: uppercase; }
+
         input, select { 
             width: 100%; height: 50px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: 14px; 
             background: #F9F9FB; padding: 0 15px; font-size: 14px; margin-bottom: 12px; font-family: inherit;
@@ -63,7 +62,6 @@
 
         #petugas { text-transform: uppercase; }
 
-        /* Camera Box */
         .camera-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
         .camera-box {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -77,7 +75,6 @@
         .camera-box.has-img i, .camera-box.has-img span { display: none; }
         .preview-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 18px; display: none; }
 
-        /* Button */
         .btn-send { 
             background: var(--ios-green); color: white; border: none; height: 60px; 
             border-radius: 20px; width: 100%; font-size: 16px; font-weight: 800; 
@@ -85,26 +82,12 @@
             margin: 20px 0 30px;
         }
 
-        /* Footer Modern */
         .footer-modern {
-            margin-top: auto;
-            margin-left: -16px;
-            margin-right: -16px;
-            background: var(--dark-bg);
-            padding: 40px 24px;
-            text-align: center;
-            border-top-left-radius: 40px;
-            border-top-right-radius: 40px;
-            color: rgba(255,255,255,0.5);
+            margin-top: auto; margin-left: -16px; margin-right: -16px;
+            background: var(--dark-bg); padding: 40px 24px; text-align: center;
+            border-top-left-radius: 40px; border-top-right-radius: 40px; color: rgba(255,255,255,0.5);
         }
-        .footer-logo {
-            font-weight: 800;
-            font-size: 16px;
-            color: white;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            display: block;
-        }
+        .footer-logo { font-weight: 800; font-size: 16px; color: white; letter-spacing: 2px; margin-bottom: 8px; display: block; }
         .footer-tagline { font-size: 11px; line-height: 1.6; margin-bottom: 20px; }
         .footer-divider { width: 40px; height: 2px; background: var(--ios-blue); margin: 0 auto 20px; border-radius: 2px; }
         .footer-copyright { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
@@ -118,7 +101,7 @@
 
 <div id="splash-screen">
     <i class="fa-solid fa-droplet" style="font-size:50px; color:var(--ios-blue);"></i>
-    <h2 style="color:white; margin-top:20px; letter-spacing:3px; font-weight:800; font-size:14px;">DEBIT PRO V8.9</h2>
+    <h2 style="color:white; margin-top:20px; letter-spacing:3px; font-weight:800; font-size:14px;">DEBIT PRO V9.0</h2>
 </div>
 
 <div class="btn-home-container">
@@ -141,10 +124,10 @@
         </div>
     </div>
 
-    <!-- Section 1 -->
+    <!-- Section 1: Administrasi -->
     <div class="card card-overlap">
         <span class="card-label"><i class="fa-solid fa-user-shield"></i> 1. Administrasi</span>
-        <input type="text" id="petugas" placeholder="NAMA PETUGAS PELAPOR" oninput="this.value = this.value.toUpperCase(); validateField(this)">
+        <input type="text" id="petugas" placeholder="NAMA PETUGAS PELAPOR" oninput="validateField(this)">
         <div style="display:flex; gap:10px;">
             <input type="date" id="tgl" onchange="validateField(this)">
             <input type="time" id="jam" onchange="validateField(this)">
@@ -162,47 +145,74 @@
         </select>
     </div>
 
-    <!-- Section 2 -->
+    <!-- Section 2: Debit Bangunan Utama -->
     <div class="card">
-        <span class="card-label"><i class="fa-solid fa-gauge-high"></i> 2. Kondisi & TMA</span>
+        <span class="card-label"><i class="fa-solid fa-gauge-high"></i> 2. Debit Bangunan Utama</span>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <input type="number" id="tma" placeholder="TMA (cm)" step="any" oninput="validateField(this)">
-            <select id="trend">
-                <option value="Tetap">📊 Tetap</option>
-                <option value="Naik">📈 Naik</option>
-                <option value="Turun">📉 Turun</option>
-            </select>
+            <input type="number" id="mon" placeholder="Debit Mon (m³/dt)" step="any" oninput="validateField(this)">
         </div>
-        <input type="number" id="mon" placeholder="Debit Monitoring (m³/dt)" step="any" oninput="validateField(this)">
+
+        <div class="group-title">Intake Kiri</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+            <input type="number" id="lk" placeholder="Luas (ha)" step="any">
+            <input type="number" id="qk" placeholder="Qact" step="any">
+            <input type="number" id="dk" placeholder="Qd" step="any">
+        </div>
+
+        <div class="group-title">Intake Kanan</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+            <input type="number" id="lr" placeholder="Luas (ha)" step="any">
+            <input type="number" id="qr" placeholder="Qact" step="any">
+            <input type="number" id="dr" placeholder="Qd" step="any">
+        </div>
     </div>
 
-    <!-- Section 3 -->
+    <!-- Section 3: Cuaca & Status -->
     <div class="card">
-        <span class="card-label"><i class="fa-solid fa-camera"></i> 3. Dokumentasi Ber-Watermark</span>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+        <span class="card-label"><i class="fa-solid fa-cloud-sun"></i> 3. Cuaca & Status</span>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
             <select id="cuaca">
                 <option>☀️ Cerah</option>
                 <option>☁️ Mendung</option>
-                <option>Hujan</option>
+                <option>🌧️ Hujan</option>
             </select>
             <select id="status" onchange="uS()">
                 <option value="Aman">✅ Aman</option>
                 <option value="Siaga">⚠️ Siaga</option>
                 <option value="Bahaya">🚨 Bahaya</option>
             </select>
+            <select id="trend">
+                <option value="Tetap">📊 Tetap</option>
+                <option value="Naik">📈 Naik</option>
+                <option value="Turun">📉 Turun</option>
+            </select>
         </div>
+    </div>
 
+    <!-- Section 4: Realisasi Tanam -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-leaf"></i> 4. Realisasi Tanam</span>
+        <input type="text" id="mt" placeholder="Masa Tanam (Contoh: MT I 2024)">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="number" id="real" placeholder="Luas Realisasi (ha)" step="any">
+            <input type="number" id="baku" placeholder="Luas Baku (ha)" step="any">
+        </div>
+    </div>
+
+    <!-- Section 5: Foto -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-camera"></i> 5. Dokumentasi</span>
         <div class="camera-grid">
             <label class="camera-box" id="box-1">
                 <i class="fa-solid fa-camera-retro"></i>
-                <span>FOTO INTAKE<br>(DARI GALERI/KAMERA)</span>
+                <span>FOTO INTAKE</span>
                 <input type="file" accept="image/*" style="display:none;" onchange="handlePhoto(this, 'p1', 'box-1')">
                 <img id="p1" class="preview-img">
             </label>
-
             <label class="camera-box" id="box-2">
                 <i class="fa-solid fa-water"></i>
-                <span>FOTO LIMPASAN<br>(DARI GALERI/KAMERA)</span>
+                <span>FOTO LIMPASAN</span>
                 <input type="file" accept="image/*" style="display:none;" onchange="handlePhoto(this, 'p2', 'box-2')">
                 <img id="p2" class="preview-img">
             </label>
@@ -213,12 +223,11 @@
         <i class="fa-brands fa-whatsapp"></i> KIRIM LAPORAN KE WA
     </button>
 
-    <!-- Footer Updated -->
     <footer class="footer-modern">
         <span class="footer-logo">BONDOYUDO BARU</span>
         <div class="footer-divider"></div>
         <p class="footer-tagline">Sistem Informasi Monitoring Debit Digital<br>UPT PSDA WILAYAH SUNGAI BONDOYUDO BARU</p>
-        <p class="footer-copyright">© 2024 DEBIT PRO V8.9 • DIGITAL REPORTING</p>
+        <p class="footer-copyright">© 2024 DEBIT PRO V9.0 • DIGITAL REPORTING</p>
     </footer>
 </div>
 
@@ -231,6 +240,19 @@
         }, err => {
             currentCoords = "GPS Disabled";
         });
+    }
+
+    function getHari(dateStr) {
+        if(!dateStr) return "-";
+        const date = new Date(dateStr);
+        const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        return hari[date.getDay()];
+    }
+
+    function formatTgl(dateStr) {
+        if(!dateStr) return "-";
+        const d = new Date(dateStr);
+        return `${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`;
     }
 
     function validateField(el) {
@@ -259,21 +281,18 @@
                 ctx.drawImage(img, 0, 0);
                 const fontSize = Math.max(canvas.width * 0.03, 20);
                 ctx.font = `bold ${fontSize}px 'JetBrains Mono', monospace`;
-                ctx.shadowColor = "black";
-                ctx.shadowBlur = 7;
-                ctx.lineWidth = 4;
+                ctx.shadowColor = "black"; ctx.shadowBlur = 7; ctx.lineWidth = 4;
                 ctx.strokeStyle = "rgba(0,0,0,0.5)";
                 const bendung = document.getElementById('sB').value || "BENDUNG";
                 const date = document.getElementById('tgl').value;
                 const time = document.getElementById('jam').value;
                 const petugas = document.getElementById('petugas').value || "PETUGAS";
                 const lines = [`📍 ${bendung}`, `📅 ${date} | 🕒 ${time}`, `👷 ${petugas}`, `🌐 ${currentCoords}`];
-                const x = 30;
                 let y = canvas.height - (lines.length * (fontSize * 1.4)) - 30;
                 ctx.fillStyle = "white";
                 lines.forEach(line => {
-                    ctx.strokeText(line, x, y);
-                    ctx.fillText(line, x, y);
+                    ctx.strokeText(line, 30, y);
+                    ctx.fillText(line, 30, y);
                     y += fontSize * 1.4;
                 });
                 const processedData = canvas.toDataURL('image/jpeg', 0.8);
@@ -310,13 +329,79 @@
             const el = document.getElementById(id);
             if (!el.value) { el.classList.add('input-error'); valid = false; }
         });
-        if (!valid) return;
-        const msg = `*LAPORAN HARIAN BENDUNG*%0A` +
-                    `Petugas: ${document.getElementById('petugas').value}%0A` +
-                    `Bendung: ${document.getElementById('sB').value}%0A` +
-                    `TMA: ${document.getElementById('tma').value} cm%0A` +
-                    `Status: ${document.getElementById('status').value}`;
-        window.open(`https://wa.me/?text=${msg}`, '_blank');
+
+        if (!valid) {
+            alert("Mohon lengkapi data Administrasi dan TMA!");
+            return;
+        }
+
+        // Ambil Nilai
+        const p = document.getElementById('petugas').value;
+        const b = document.getElementById('sB').value;
+        const di = document.getElementById('sDI').value;
+        const dateVal = document.getElementById('tgl').value;
+        const tma = document.getElementById('tma').value;
+        const mon = document.getElementById('mon').value;
+        
+        const qk = document.getElementById('qk').value || "0";
+        const dk = document.getElementById('dk').value || "0";
+        const lk = document.getElementById('lk').value || "0";
+        
+        const qr = document.getElementById('qr').value || "0";
+        const dr = document.getElementById('dr').value || "0";
+        const lr = document.getElementById('lr').value || "0";
+
+        const cuaca = document.getElementById('cuaca').value;
+        const status = document.getElementById('status').value;
+        const tr = document.getElementById('trend').value;
+
+        const mt = document.getElementById('mt').value || "-";
+        const real = document.getElementById('real').value || "0";
+        const baku = document.getElementById('baku').value || "1"; // avoid div zero
+        const persen = ((parseFloat(real) / parseFloat(baku)) * 100).toFixed(2);
+
+        // Link Foto (Karena di browser lokal, kita asumsikan terlampir manual atau diupload via sistem lain)
+        const link_intake = "[Terlampir di bawah]";
+        const link_limpasan = "[Terlampir di bawah]";
+
+        const reportText = `*LAPORAN DEBIT AIR*
+Pada bendung ( ${b} )
+
+Petugas    : ${p}
+Hari       : ${getHari(dateVal)}
+Tanggal    : ${formatTgl(dateVal)}
+Jam        : ${document.getElementById('jam').value} WIB
+TMA        : ${tma} cm (hulu bangunan utama)
+Nama DI    : ${di}
+
+━━━━━━━━━━━━━━━━━━
+1. DEBIT pada bangunan Utama.
+Monitoring Debit : ${mon} (m³/dt)
+● intake [ kiri ] (luas layanan : ${lk} ha)
+Qact   : ${qk} m³/dt
+Qd     : ${dk} m³/dt (sesuai RAAR)
+
+● intake [ kanan ] (luas layanan : ${lr} ha)
+Qact   : ${qr} m³/dt
+Qd     : ${dr} m³/dt (sesuai RAAR)
+
+━━━━━━━━━━━━━━━━━━
+2. Informasi Cuaca
+Cuaca      : ${cuaca}
+Status     : ${status}
+Ket        : Debit ${tr}
+
+━━━━━━━━━━━━━━━━━━
+3. Informasi Luas Realisasi tanam.
+Masa Tanam : ${mt}
+Realisasi  : ${real} ha (${persen}% dari luas baku ${baku} ha)
+
+Lampiran:
+1. Foto intake: ${link_intake}
+2. Foto limpasan: ${link_limpasan}`;
+
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(reportText)}`;
+        window.open(waUrl, '_blank');
     }
 </script>
 
