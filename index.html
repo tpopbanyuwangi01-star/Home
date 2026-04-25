@@ -272,7 +272,8 @@
         navigator.serviceWorker.register(swUrl);
     }
 
-    const scriptURL = ""; 
+    // UPDATE: Menggunakan URL Web App yang baru saja di-deploy
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwP1FWxZWN1NUrO4ulfHjzkFxAZC9tGe_HvSG3pwvdsAsgm408thHMidLzcYQhFmus3HQ/exec"; 
     let imgIntake = null;
     let imgLimpasan = null;
 
@@ -496,6 +497,7 @@
         const dateVal = new Date(document.getElementById('tgl').value);
         const report = `*LAPORAN DEBIT AIR*
 Pada bendung ( ${b} )
+
 Petugas    : ${p}
 Hari       : ${getHari(dateVal)}
 Tanggal    : ${formatTgl(document.getElementById('tgl').value)}
