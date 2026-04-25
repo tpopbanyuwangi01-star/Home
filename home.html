@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Monitoring Debit Bendung PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .print-container { box-shadow: none; border: none; width: 100%; margin: 0; padding: 0; }
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+        }
+
+        .view-transition {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .active-tab {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .modal-bg {
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+
+        @-webkit-keyframes spinner { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="app" class="min-h-screen flex flex-col">
+        
+        <!-- Navbar -->
+        <nav class="bg-slate-900 text-white p-4 sticky top-0 z-50 no-print shadow-lg">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 p-2 rounded-lg">
+                        <i class="fa-solid fa-droplet text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight">HydroReport <span class="text-blue-400 text-[10px] ml-1 px-1 border border-blue-400 rounded">V8.0 PRO</span></h1>
+                        <p class="text-[10px] text-slate-400 uppercase tracking-widest">Sistem Monitoring Irigasi</p>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex space-x-6">
+                    <button onclick="goBack()" id="tab-db" class="text-sm font-bold pb-1 transition-all border-b-2 border-transparent active-tab">Database</button>
+                    <button id="tab-dtl" class="text-sm font-bold pb-1 transition-all border-b-2 border-transparent text-slate-400 cursor-not-allowed">Detail Laporan</button>
+                </div>
+
+                <div id="nav-actions" class="flex space-x-4"></div>
+            </div>
+        </nav>
+
+        <main class="flex-grow p-4 md:p-8">
+            
+            <!-- VIEW 1: TABEL DATA -->
+            <div id="view-table" class="max-w-7xl mx-auto space-y-6 view-transition">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-800">Database Real-time</h2>
+                        <p class="text-slate-500 text-sm">Terintegrasi dengan Google Sheets & Drive.</p>
+                    </div>
+                    <div class="bg-blue-600 text-white p-3 rounded-xl shadow-md flex items-center space-x-3">
+                        <div class="text-right">
+                            <p class="text-[10px] opacity-80 font-bold uppercase">Total Entri</p>
+                            <p class="font-bold text-lg leading-none" id="stat-total">0</p>
+                        </div>
+                        <i class="fa-solid fa-cloud-arrow-up text-xl opacity-50"></i>
+                    </div>
+                </div>
+
+                <!-- Tabel -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b border-slate-200">
+                                <tr>
+                                    <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Waktu</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Lokasi & Petugas</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Data Teknis</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Status</th>
+                                    <th class="p-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Opsi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: DETAIL LAPORAN -->
+            <div id="view-detail" class="hidden max-w-4xl mx-auto view-transition opacity-0 transform translate-y-4">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden print-container border border-slate-100">
+                    <div class="bg-slate-900 text-white p-10 text-center">
+                        <h1 class="text-2xl font-extrabold uppercase">Laporan Monitoring Debit Air</h1>
+                        <p class="text-slate-400 text-sm" id="d-id-label">Data Cloud Sheets</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-slate-50 border-b border-slate-100">
+                        <div class="flex flex-col"><span class="text-[10px] text-slate-500 uppercase font-bold">Bendung</span><span id="d-bendung" class="text-slate-800 font-bold">-</span></div>
+                        <div class="flex flex-col"><span class="text-[10px] text-slate-500 uppercase font-bold">Tanggal</span><span id="d-tanggal" class="text-slate-800 font-bold">-</span></div>
+                        <div class="flex flex-col"><span class="text-[10px] text-slate-500 uppercase font-bold">Jam</span><span id="d-jam" class="text-slate-800 font-bold">-</span></div>
+                        <div class="flex flex-col"><span class="text-[10px] text-slate-500 uppercase font-bold">Petugas</span><span id="d-petugas" class="text-slate-800 font-bold">-</span></div>
+                    </div>
+
+                    <div class="p-8 space-y-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Foto Intake</h3>
+                                <img id="d-foto-intake" src="" class="w-full h-48 object-cover rounded-xl border">
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Foto Limpasan</h3>
+                                <img id="d-foto-limpasan" src="" class="w-full h-48 object-cover rounded-xl border">
+                            </div>
+                        </div>
+                        <div class="p-6 bg-blue-50 rounded-2xl grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="text-center"><p class="text-[10px] font-bold text-blue-400 uppercase">TMA</p><p class="text-xl font-black text-blue-900" id="d-tma">0</p></div>
+                            <div class="text-center"><p class="text-[10px] font-bold text-blue-400 uppercase">Debit</p><p class="text-xl font-black text-blue-900" id="d-mon">0</p></div>
+                            <div class="text-center"><p class="text-[10px] font-bold text-blue-400 uppercase">Cuaca</p><p class="text-xl font-black text-blue-900" id="d-cuaca">-</p></div>
+                            <div class="text-center"><p class="text-[10px] font-bold text-blue-400 uppercase">Trend</p><p class="text-xl font-black text-blue-900" id="d-trend">-</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL: FORM LAPORAN (Sesuai Skrip GAS V8.0) -->
+            <div id="modal-form" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-bg">
+                <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+                    <div class="bg-slate-900 p-6 text-white flex justify-between items-center sticky top-0 z-10">
+                        <h3 class="font-bold text-lg">Kirim Laporan ke Database</h3>
+                        <button onclick="toggleModal(false)" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <form id="report-form" class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Identitas -->
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Petugas</label><input type="text" id="f-petugas" required class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Bendung</label>
+                            <select id="f-bendung" required class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm">
+                                <option>BENDUNG KARANGDORO</option><option>BENDUNG KEDUNG OMBO</option><option>BENDUNG COLO</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">DI</label><input type="text" id="f-di" required class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm"></div>
+                        
+                        <!-- Waktu & Teknis -->
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Tanggal</label><input type="date" id="f-tanggal" required class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Jam</label><input type="time" id="f-jam" required class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">TMA (cm)</label><input type="number" id="f-tma" required class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm"></div>
+                        
+                        <!-- Parameter Lain -->
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Trend</label>
+                            <select id="f-trend" class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm"><option>Tetap</option><option>Naik</option><option>Turun</option></select>
+                        </div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Debit (m³/dt)</label><input type="number" step="0.001" id="f-mon" required class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm"></div>
+                        <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Cuaca</label><input type="text" id="f-cuaca" value="Cerah" class="w-full px-4 py-2 bg-slate-50 border rounded-xl text-sm"></div>
+
+                        <!-- Upload Foto (Dual) -->
+                        <div class="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 border-2 border-dashed rounded-2xl text-center">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Foto Intake</label>
+                                <input type="file" id="f-img-intake" accept="image/*" class="text-xs">
+                            </div>
+                            <div class="p-4 border-2 border-dashed rounded-2xl text-center">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Foto Limpasan</label>
+                                <input type="file" id="f-img-limpasan" accept="image/*" class="text-xs">
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-3 flex space-x-3 pt-4">
+                            <button type="button" onclick="toggleModal(false)" class="flex-1 px-6 py-3 bg-slate-100 rounded-xl font-bold">Batal</button>
+                            <button type="submit" id="btn-submit" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold flex justify-center items-center">
+                                <span id="btn-text">Kirim Data</span>
+                                <div id="btn-loader" class="hidden loader ease-linear rounded-full border-2 border-t-2 border-gray-200 h-5 w-5 ml-3"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Toast -->
+            <div id="toast" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center space-x-3">
+                <i class="fa-solid fa-circle-check text-green-400"></i><span id="toast-msg">Success</span>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // CONFIGURATION: SAMAKAN DENGAN DEPLOYMENT URL ANDA
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwP1FWxZWN1NUrO4ulfHjzkFxAZC9tGe_HvSG3pwvdsAsgm408thHMidLzcYQhFmus3HQ/exec";
+        
+        let dbData = [];
+
+        async function init() {
+            updateNav();
+            // Catatan: Karena Google Apps Script tidak mendukung GET secara langsung untuk data besar tanpa kunci API, 
+            // di sini kita menggunakan data simulasi/lokal untuk tampilan awal, namun POST akan langsung ke Sheets.
+            renderTable();
+        }
+
+        // Helper: Convert File to Base64
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        async function saveNewReport() {
+            const btnSubmit = document.getElementById('btn-submit');
+            const btnText = document.getElementById('btn-text');
+            const btnLoader = document.getElementById('btn-loader');
+
+            // UI Loading
+            btnSubmit.disabled = true;
+            btnText.innerText = "Mengunggah...";
+            btnLoader.classList.remove('hidden');
+
+            try {
+                const intakeFile = document.getElementById('f-img-intake').files[0];
+                const limpasanFile = document.getElementById('f-img-limpasan').files[0];
+
+                const payload = {
+                    petugas: document.getElementById('f-petugas').value,
+                    bendung: document.getElementById('f-bendung').value,
+                    di: document.getElementById('f-di').value,
+                    tanggal: document.getElementById('f-tanggal').value,
+                    jam: document.getElementById('f-jam').value,
+                    tma: document.getElementById('f-tma').value,
+                    trend: document.getElementById('f-trend').value,
+                    mon: document.getElementById('f-mon').value,
+                    cuaca: document.getElementById('f-cuaca').value,
+                    status: parseInt(document.getElementById('f-tma').value) > 100 ? "Waspada" : "Aman",
+                    mt: "2",
+                    persen: "100",
+                    qk: "0", dk: "0", qr: "0", dr: "0", // Default fields
+                    imageIntake: intakeFile ? await toBase64(intakeFile) : "",
+                    imageLimpasan: limpasanFile ? await toBase64(limpasanFile) : ""
+                };
+
+                // Kirim ke Google Apps Script
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.result === "success") {
+                    showToast("Data Berhasil Disimpan ke Sheets!");
+                    // Tambahkan ke local DB untuk display langsung
+                    payload.id = Date.now();
+                    payload.urlIntake = result.url_intake;
+                    payload.urlLimpasan = result.url_limpasan;
+                    dbData.unshift(payload);
+                    renderTable();
+                    toggleModal(false);
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error(error);
+                showToast("Gagal mengunggah: " + error.message);
+            } finally {
+                btnSubmit.disabled = false;
+                btnText.innerText = "Kirim Data";
+                btnLoader.classList.add('hidden');
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('table-body');
+            document.getElementById('stat-total').innerText = dbData.length;
+
+            tbody.innerHTML = dbData.map(item => `
+                <tr class="hover:bg-blue-50/50 transition-all cursor-pointer">
+                    <td class="p-4" onclick="showDetail(${item.id})">
+                        <div class="font-bold text-slate-700">${item.tanggal}</div>
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">${item.jam} WIB</div>
+                    </td>
+                    <td class="p-4" onclick="showDetail(${item.id})">
+                        <div class="font-bold text-slate-800">${item.bendung}</div>
+                        <div class="text-[10px] text-blue-600 font-bold">Oleh: ${item.petugas}</div>
+                    </td>
+                    <td class="p-4 text-center" onclick="showDetail(${item.id})">
+                        <div class="flex flex-col items-center">
+                            <span class="font-mono font-bold text-slate-600">TMA: ${item.tma}</span>
+                            <span class="text-[10px] text-slate-400">Debit: ${item.mon} m³/dt</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span class="px-2 py-1 rounded-full text-[9px] font-black uppercase ${item.status === 'Waspada' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}">
+                            ${item.status}
+                        </span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <button onclick="showDetail(${item.id})" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showDetail(id) {
+            const item = dbData.find(x => x.id === id);
+            if (!item) return;
+
+            document.getElementById('view-table').classList.add('hidden');
+            const detailView = document.getElementById('view-detail');
+            detailView.classList.remove('hidden');
+            setTimeout(() => detailView.classList.remove('opacity-0', 'translate-y-4'), 10);
+
+            // Populate
+            document.getElementById('d-bendung').innerText = item.bendung;
+            document.getElementById('d-tanggal').innerText = item.tanggal;
+            document.getElementById('d-jam').innerText = item.jam;
+            document.getElementById('d-petugas').innerText = item.petugas;
+            document.getElementById('d-tma').innerText = item.tma;
+            document.getElementById('d-mon').innerText = item.mon;
+            document.getElementById('d-cuaca').innerText = item.cuaca;
+            document.getElementById('d-trend').innerText = item.trend;
+            document.getElementById('d-foto-intake').src = item.urlIntake || "https://placehold.co/600x400?text=No+Image";
+            document.getElementById('d-foto-limpasan').src = item.urlLimpasan || "https://placehold.co/600x400?text=No+Image";
+
+            document.getElementById('tab-db').classList.remove('active-tab');
+            document.getElementById('tab-dtl').classList.add('active-tab');
+            updateNav('detail');
+        }
+
+        function goBack() {
+            document.getElementById('view-table').classList.remove('hidden');
+            document.getElementById('view-detail').classList.add('hidden', 'opacity-0', 'translate-y-4');
+            document.getElementById('tab-db').classList.add('active-tab');
+            document.getElementById('tab-dtl').classList.remove('active-tab');
+            updateNav('table');
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('modal-form');
+            if (show) {
+                modal.classList.remove('hidden');
+                document.getElementById('f-tanggal').valueAsDate = new Date();
+            } else {
+                modal.classList.add('hidden');
+                document.getElementById('report-form').reset();
+            }
+        }
+
+        function updateNav(view = 'table') {
+            const nav = document.getElementById('nav-actions');
+            if (view === 'table') {
+                nav.innerHTML = `<button onclick="toggleModal(true)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-sm font-bold flex items-center shadow-lg shadow-blue-500/20"><i class="fa-solid fa-plus mr-2"></i> Lapor Baru</button>`;
+            } else {
+                nav.innerHTML = `<button onclick="goBack()" class="bg-slate-800 px-4 py-2 rounded-xl text-sm font-bold"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali</button>`;
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        document.getElementById('report-form').addEventListener('submit', e => {
+            e.preventDefault();
+            saveNewReport();
+        });
+
+        init();
+    </script>
+</body>
+</html>
