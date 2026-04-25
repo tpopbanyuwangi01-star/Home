@@ -488,31 +488,45 @@
         }
 
         // 2. Format Teks WA
+        const dateVal = new Date(document.getElementById('tgl').value);
+
         const reportText = `*LAPORAN DEBIT AIR*
-Bendung: *${rawB.toUpperCase()}*
+Pada bendung ( ${b} )
 
-Petugas  : ${p}
-Waktu    : ${getHari(new Date(document.getElementById('tgl').value))}, ${formatTgl(document.getElementById('tgl').value)} | ${document.getElementById('jam').value} WIB
-TMA      : ${tma} cm
-DI       : ${rawDI.toUpperCase()}
+Petugas    : ${p}
+Hari       : ${getHari(dateVal)}
+Tanggal    : ${formatTgl(document.getElementById('tgl').value)}
+Jam        : ${document.getElementById('jam').value} WIB
+TMA        : ${tma} cm (hulu bangunan utama)
+Nama DI    : ${di}
 
-*1. DATA DEBIT*
-Q-Utama  : ${mon} m³/dt
-Intake Kiri  : Qact ${document.getElementById('qk').value} | Qd ${document.getElementById('dk').value}
-Intake Kanan : Qact ${document.getElementById('qr').value} | Qd ${document.getElementById('dr').value}
+━━━━━━━━━━━━━━━━━━
+1. DEBIT pada bangunan Utama.
+Monitoring Debit : ${mon} (Cm³/dt
+● intake [ kiri ] (luas layanan : ${lk} ha)
+Qact   : ${qk} m³/dt
+Qd     : ${dk} m³/dt (sesuai RAAR)
 
-*2. KONDISI*
-Cuaca    : ${document.getElementById('cuaca').value}
-Status   : ${document.getElementById('status').value}
-Ket      : Debit ${tr}
+● intake [ kanan ] (luas layanan : ${lr} ha)
+Qact   : ${qr} m³/dt
+Qd     : ${dr} m³/dt (sesuai RAAR)
 
-*3. REALISASI TANAM*
-Masa Tanam : MT ${document.getElementById('mt').value}
-Luas Real  : ${real} ha (${persen} dari ${baku} ha)
+━━━━━━━━━━━━━━━━━━
+2. Informasi Cuaca
+Cuaca      : ${cuaca}
+Status     : ${status}
+Ket        : Debit ${tr}
 
-*LAMPIRAN:*
-1. Foto Intake: ${link_intake}
-2. Foto Limpasan: ${link_limpasan}
+━━━━━━━━━━━━━━━━━━
+3. Informasi Luas Realisasi tanam.
+Masa Tanam : ${mt}
+Realisasi  : ${real} ha (${persen}% dari luas baku ${baku} ha)
+
+Lampiran:
+
+1. Foto intake: ${link_intake}
+2. Foto limpasan: ${link_limpasan}
+
 (V8.0 PRO SYSTEM)`;
 
         // Salin ke clipboard
