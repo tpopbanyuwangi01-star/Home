@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1C1C1E">
+    <title>Monitoring Debit Bendung v9.2 Pro</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --ios-blue: #007AFF; 
+            --ios-green: #34C759; 
+            --ios-red: #FF3B30;
+            --ios-orange: #FF9500;
+            --ios-card: rgba(255, 255, 255, 0.95);
+            --dark-bg: #1C1C1E;
+            --error-bg: #FFF2F2;
+            --error-border: #FF3B30;
+        }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background-color: #F2F2F7; color: #1C1C1E; overflow-x: hidden; }
+
+        .btn-home-container { position: fixed; top: 20px; left: 20px; z-index: 3000; }
+        .btn-home-floating {
+            width: 46px; height: 46px; background: var(--ios-green); border: 2px solid white;
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            color: white; text-decoration: none; box-shadow: 0 4px 15px rgba(52, 199, 89, 0.4);
+        }
+
+        .hero-pro {
+            background: linear-gradient(180deg, #1C1C1E 0%, #2C2C2E 100%);
+            padding: 90px 24px 80px; border-bottom-left-radius: 45px; border-bottom-right-radius: 45px; 
+            color: white; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .hero-siaga { background: linear-gradient(180deg, var(--ios-orange) 0%, #E68600 100%) !important; }
+        .hero-bahaya { background: linear-gradient(180deg, var(--ios-red) 0%, #D73128 100%) !important; }
+
+        .container { max-width: 500px; margin: auto; padding: 0 16px; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        .card { 
+            background: var(--ios-card); border-radius: 28px; padding: 22px; 
+            margin-bottom: 20px; border: 1px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            position: relative; z-index: 10;
+        }
+        
+        .card-overlap { margin-top: -50px; }
+        .card-label { font-size: 11px; font-weight: 800; color: var(--ios-blue); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+        .group-title { font-size: 12px; font-weight: 700; color: #8E8E93; margin: 15px 0 8px 5px; text-transform: uppercase; }
+
+        input, select { 
+            width: 100%; height: 50px; border: 1.5px solid rgba(0,0,0,0.06); border-radius: 14px; 
+            background: #F9F9FB; padding: 0 15px; font-size: 14px; margin-bottom: 12px; font-family: inherit;
+        }
+        input:focus { border-color: var(--ios-blue); background: white; outline: none; }
+        
+        /* Force uppercase for names */
+        #petugas { text-transform: uppercase; }
+
+        .input-error { border-color: var(--error-border) !important; background-color: var(--error-bg) !important; }
+
+        .calc-info { font-size: 12px; color: var(--ios-blue); font-weight: 700; margin-top: -8px; margin-bottom: 12px; display: block; text-align: right; }
+
+        .camera-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .camera-box {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #F2F2F7; border: 2px dashed #C7C7CC; border-radius: 20px;
+            aspect-ratio: 1/1; cursor: pointer; transition: all 0.3s ease; position: relative;
+            overflow: hidden; padding: 10px; text-align: center;
+        }
+        .camera-box i { font-size: 28px; color: #8E8E93; margin-bottom: 8px; }
+        .camera-box span { font-size: 10px; font-weight: 800; color: #8E8E93; text-transform: uppercase; line-height: 1.2; }
+        .camera-box.has-img { border: none; background: #000; }
+        .camera-box.has-img i, .camera-box.has-img span { display: none; }
+        .preview-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 18px; display: none; }
+
+        .btn-send { 
+            background: var(--ios-green); color: white; border: none; height: 60px; 
+            border-radius: 20px; width: 100%; font-size: 16px; font-weight: 800; 
+            box-shadow: 0 10px 25px rgba(52, 199, 89, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin: 20px 0 30px;
+        }
+
+        .footer-modern {
+            margin-top: auto; margin-left: -16px; margin-right: -16px;
+            background: var(--dark-bg); padding: 40px 24px; text-align: center;
+            border-top-left-radius: 40px; border-top-right-radius: 40px; color: rgba(255,255,255,0.5);
+        }
+        .footer-logo { font-weight: 800; font-size: 16px; color: white; letter-spacing: 2px; margin-bottom: 8px; display: block; }
+        .footer-tagline { font-size: 11px; line-height: 1.6; margin-bottom: 20px; }
+        .footer-divider { width: 40px; height: 2px; background: var(--ios-blue); margin: 0 auto 20px; border-radius: 2px; }
+        .footer-copyright { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        #wm-canvas { display: none; }
+        #splash-screen { position: fixed; inset: 0; background: #121214; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.6s ease; }
+        #splash-screen.fade-out { opacity: 0; visibility: hidden; }
+    </style>
+</head>
+<body>
+
+<div id="splash-screen">
+    <i class="fa-solid fa-droplet" style="font-size:50px; color:var(--ios-blue);"></i>
+    <h2 style="color:white; margin-top:20px; letter-spacing:3px; font-weight:800; font-size:14px;">DEBIT PRO V9.2</h2>
+</div>
+
+<div class="btn-home-container">
+    <a href="#" class="btn-home-floating"><i class="fa-solid fa-house"></i></a>
+</div>
+
+<canvas id="wm-canvas"></canvas>
+
+<div class="container">
+    <div class="hero-pro" id="hero" style="margin-left:-16px; margin-right:-16px;">
+        <p style="font-size:10px; font-weight:800; opacity:0.6; letter-spacing:1.5px; margin:0;">UPT PSDA BONDOYUDO BARU</p>
+        <h1 style="font-size:24px; font-weight:800; margin:5px 0 20px;">Laporan Harian Bendung</h1>
+        
+        <div style="background:rgba(255,255,255,0.08); padding:15px 20px; border-radius:22px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <span id="day-info" style="font-size:9px; font-weight:800; opacity:0.6; display:block; text-transform:uppercase;">...</span>
+                <div id="live-time" style="font-family:'JetBrains Mono'; font-size:20px; font-weight:700;">00:00:00</div>
+            </div>
+            <i class="fa-solid fa-cloud-sun" style="color:#FFD60A; font-size:22px;"></i>
+        </div>
+    </div>
+
+    <!-- Section 1: Administrasi -->
+    <div class="card card-overlap">
+        <span class="card-label"><i class="fa-solid fa-user-shield"></i> 1. Administrasi</span>
+        <!-- Perbaikan: oninput="handleNameInput(this)" untuk paksa kapital -->
+        <input type="text" id="petugas" placeholder="NAMA PETUGAS PELAPOR" oninput="handleNameInput(this)">
+        <div style="display:flex; gap:10px;">
+            <input type="date" id="tgl" onchange="validateField(this)">
+            <input type="time" id="jam" onchange="validateField(this)">
+        </div>
+        <select id="sDI" onchange="validateField(this)">
+            <option value="">Pilih Daerah Irigasi...</option>
+            <option value="DI BARU">DI BARU</option>
+            <option value="DI POROLINGGO">DI POROLINGGO</option>
+        </select>
+        <select id="sB" onchange="validateField(this)">
+            <option value="">Pilih Bendung...</option>
+            <option value="BENDUNG KARANGDORO">BENDUNG KARANGDORO</option>
+            <option value="BENDUNG SUMBERMULYO">BENDUNG SUMBERMULYO</option>
+            <option value="BENDUNG POROLINGGO">BENDUNG POROLINGGO</option>
+        </select>
+    </div>
+
+    <!-- Section 2: Debit Bangunan Utama -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-gauge-high"></i> 2. Debit Bangunan Utama</span>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="number" id="tma" placeholder="TMA (cm)" step="any" oninput="validateField(this)">
+            <input type="number" id="mon" placeholder="Debit Mon (m³/dt)" step="any" oninput="validateField(this)">
+        </div>
+
+        <div class="group-title">Intake Kiri</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+            <input type="number" id="lk" placeholder="Luas (ha)" step="any">
+            <input type="number" id="qk" placeholder="Qact" step="any">
+            <input type="number" id="dk" placeholder="Qd" step="any">
+        </div>
+
+        <div class="group-title">Intake Kanan</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+            <input type="number" id="lr" placeholder="Luas (ha)" step="any">
+            <input type="number" id="qr" placeholder="Qact" step="any">
+            <input type="number" id="dr" placeholder="Qd" step="any">
+        </div>
+    </div>
+
+    <!-- Section 3: Cuaca & Status -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-cloud-sun"></i> 3. Cuaca & Status</span>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+            <select id="cuaca">
+                <option>☀️ Cerah</option>
+                <option>☁️ Mendung</option>
+                <option>🌧️ Hujan</option>
+            </select>
+            <select id="status" onchange="uS()">
+                <option value="Aman">✅ Aman</option>
+                <option value="Siaga">⚠️ Siaga</option>
+                <option value="Bahaya">🚨 Bahaya</option>
+            </select>
+            <select id="trend">
+                <option value="Tetap">📊 Tetap</option>
+                <option value="Naik">📈 Naik</option>
+                <option value="Turun">📉 Turun</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Section 4: Realisasi Tanam -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-leaf"></i> 4. Realisasi Tanam</span>
+        <select id="mt">
+            <option value="">Pilih Masa Tanam...</option>
+            <option value="MT 1">MT 1</option>
+            <option value="MT 2">MT 2</option>
+            <option value="MT 3">MT 3</option>
+        </select>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <input type="number" id="real" placeholder="Luas Realisasi (ha)" step="any" oninput="calcPersen()">
+            <input type="number" id="baku" placeholder="Luas Baku (ha)" step="any" oninput="calcPersen()">
+        </div>
+        <span class="calc-info" id="persen-info">Prosentase: 0%</span>
+    </div>
+
+    <!-- Section 5: Foto -->
+    <div class="card">
+        <span class="card-label"><i class="fa-solid fa-camera"></i> 5. Dokumentasi</span>
+        <div class="camera-grid">
+            <label class="camera-box" id="box-1">
+                <i class="fa-solid fa-camera-retro"></i>
+                <span>FOTO INTAKE</span>
+                <input type="file" accept="image/*" style="display:none;" onchange="handlePhoto(this, 'p1', 'box-1')">
+                <img id="p1" class="preview-img">
+            </label>
+            <label class="camera-box" id="box-2">
+                <i class="fa-solid fa-water"></i>
+                <span>FOTO LIMPASAN</span>
+                <input type="file" accept="image/*" style="display:none;" onchange="handlePhoto(this, 'p2', 'box-2')">
+                <img id="p2" class="preview-img">
+            </label>
+        </div>
+    </div>
+
+    <button class="btn-send" onclick="validateAndSend()">
+        <i class="fa-brands fa-whatsapp"></i> KIRIM LAPORAN KE WA
+    </button>
+
+    <footer class="footer-modern">
+        <span class="footer-logo">BONDOYUDO BARU</span>
+        <div class="footer-divider"></div>
+        <p class="footer-tagline">Sistem Informasi Monitoring Debit Digital<br>UPT PSDA WILAYAH SUNGAI BONDOYUDO BARU</p>
+        <p class="footer-copyright">© 2024 DEBIT PRO V9.2 • DIGITAL REPORTING</p>
+    </footer>
+</div>
+
+<script>
+    let currentCoords = "Locating...";
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            currentCoords = `${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`;
+        }, err => {
+            currentCoords = "GPS Disabled";
+        });
+    }
+
+    // Fungsi paksa Kapital Nama Petugas
+    function handleNameInput(el) {
+        el.value = el.value.toUpperCase();
+        validateField(el);
+    }
+
+    function calcPersen() {
+        const real = parseFloat(document.getElementById('real').value) || 0;
+        const baku = parseFloat(document.getElementById('baku').value) || 0;
+        const info = document.getElementById('persen-info');
+        
+        if (baku > 0) {
+            const p = ((real / baku) * 100).toFixed(2);
+            info.innerText = `Prosentase: ${p}%`;
+            info.style.color = 'var(--ios-blue)';
+        } else {
+            info.innerText = `Prosentase: 0%`;
+        }
+    }
+
+    function getHari(dateStr) {
+        if(!dateStr) return "-";
+        const date = new Date(dateStr);
+        const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        return hari[date.getDay()];
+    }
+
+    function formatTgl(dateStr) {
+        if(!dateStr) return "-";
+        const d = new Date(dateStr);
+        return `${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`;
+    }
+
+    function validateField(el) {
+        if(el.value.trim() !== "") el.classList.remove('input-error');
+    }
+
+    function uS() {
+        const s = document.getElementById('status').value;
+        const h = document.getElementById('hero');
+        h.className = 'hero-pro';
+        if(s==='Siaga') h.classList.add('hero-siaga');
+        if(s==='Bahaya') h.classList.add('hero-bahaya');
+    }
+
+    async function handlePhoto(input, imgId, boxId) {
+        if (!input.files || !input.files[0]) return;
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.getElementById('wm-canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const fontSize = Math.max(canvas.width * 0.03, 20);
+                ctx.font = `bold ${fontSize}px 'JetBrains Mono', monospace`;
+                ctx.shadowColor = "black"; ctx.shadowBlur = 7; ctx.lineWidth = 4;
+                ctx.strokeStyle = "rgba(0,0,0,0.5)";
+                const bendung = document.getElementById('sB').value || "BENDUNG";
+                const date = document.getElementById('tgl').value;
+                const time = document.getElementById('jam').value;
+                const petugas = document.getElementById('petugas').value || "PETUGAS";
+                const lines = [`📍 ${bendung}`, `📅 ${date} | 🕒 ${time}`, `👷 ${petugas}`, `🌐 ${currentCoords}`];
+                let y = canvas.height - (lines.length * (fontSize * 1.4)) - 30;
+                ctx.fillStyle = "white";
+                lines.forEach(line => {
+                    ctx.strokeText(line, 30, y);
+                    ctx.fillText(line, 30, y);
+                    y += fontSize * 1.4;
+                });
+                const processedData = canvas.toDataURL('image/jpeg', 0.8);
+                const preview = document.getElementById(imgId);
+                preview.src = processedData;
+                preview.style.display = 'block';
+                document.getElementById(boxId).classList.add('has-img');
+                document.getElementById(boxId).classList.remove('input-error');
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clock() {
+        const n = new Date();
+        document.getElementById('live-time').innerText = n.toLocaleTimeString('id-ID').replace(/\./g, ':');
+        const h = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+        const b = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+        document.getElementById('day-info').innerText = `${h[n.getDay()]}, ${n.getDate()} ${b[n.getMonth()]} ${n.getFullYear()}`;
+    }
+
+    window.onload = () => {
+        document.getElementById('tgl').value = new Date().toISOString().split('T')[0];
+        document.getElementById('jam').value = new Date().toTimeString().substring(0,5);
+        setInterval(clock, 1000);
+        setTimeout(() => document.getElementById('splash-screen').classList.add('fade-out'), 1200);
+    };
+
+    function validateAndSend() {
+        const required = ['petugas', 'tgl', 'jam', 'sDI', 'sB', 'tma', 'mon'];
+        let valid = true;
+        required.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el.value) { el.classList.add('input-error'); valid = false; }
+        });
+
+        if (!valid) {
+            alert("Mohon lengkapi data Administrasi dan TMA!");
+            return;
+        }
+
+        const p = document.getElementById('petugas').value;
+        const b = document.getElementById('sB').value;
+        const di = document.getElementById('sDI').value;
+        const dateVal = document.getElementById('tgl').value;
+        const tma = document.getElementById('tma').value;
+        const mon = document.getElementById('mon').value;
+        
+        const qk = document.getElementById('qk').value || "0";
+        const dk = document.getElementById('dk').value || "0";
+        const lk = document.getElementById('lk').value || "0";
+        
+        const qr = document.getElementById('qr').value || "0";
+        const dr = document.getElementById('dr').value || "0";
+        const lr = document.getElementById('lr').value || "0";
+
+        const cuaca = document.getElementById('cuaca').value;
+        const status = document.getElementById('status').value;
+        const tr = document.getElementById('trend').value;
+
+        const mt = document.getElementById('mt').value || "-";
+        const real = parseFloat(document.getElementById('real').value) || 0;
+        const baku = parseFloat(document.getElementById('baku').value) || 1;
+        const persen = ((real / baku) * 100).toFixed(2);
+
+        const reportText = `*LAPORAN DEBIT AIR*
+Pada bendung ( ${b} )
+
+Petugas    : ${p}
+Hari       : ${getHari(dateVal)}
+Tanggal    : ${formatTgl(dateVal)}
+Jam        : ${document.getElementById('jam').value} WIB
+TMA        : ${tma} cm (hulu bangunan utama)
+Nama DI    : ${di}
+
+━━━━━━━━━━━━━━━━━━
+1. DEBIT pada bangunan Utama.
+Monitoring Debit : ${mon} (m³/dt)
+● intake [ kiri ] (luas layanan : ${lk} ha)
+Qact   : ${qk} m³/dt
+Qd     : ${dk} m³/dt (sesuai RAAR)
+
+● intake [ kanan ] (luas layanan : ${lr} ha)
+Qact   : ${qr} m³/dt
+Qd     : ${dr} m³/dt (sesuai RAAR)
+
+━━━━━━━━━━━━━━━━━━
+2. Informasi Cuaca
+Cuaca      : ${cuaca}
+Status     : ${status}
+Ket        : Debit ${tr}
+
+━━━━━━━━━━━━━━━━━━
+3. Informasi Luas Realisasi tanam.
+Masa Tanam : ${mt}
+Realisasi  : ${real} ha (${persen}% dari luas baku ${baku} ha)
+
+Lampiran:
+1. Foto intake: [Terlampir]
+2. Foto limpasan: [Terlampir]`;
+
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(reportText)}`;
+        window.open(waUrl, '_blank');
+    }
+</script>
+
+</body>
+</html>
